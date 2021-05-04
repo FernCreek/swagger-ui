@@ -2,6 +2,7 @@ import React, { cloneElement } from "react"
 import PropTypes from "prop-types"
 
 //import "./topbar.less"
+import Logo from "./ttweb_logo@2x.png"
 import {parseSearch, serializeSearch} from "../../core/utils"
 
 export default class Topbar extends React.Component {
@@ -113,7 +114,6 @@ export default class Topbar extends React.Component {
     let { getComponent, specSelectors, getConfigs } = this.props
     const Button = getComponent("Button")
     const Link = getComponent("Link")
-    const Logo = getComponent("Logo")
 
     let isLoading = specSelectors.loadingStatus() === "loading"
     let isFailed = specSelectors.loadingStatus() === "failed"
@@ -151,11 +151,8 @@ export default class Topbar extends React.Component {
         <div className="wrapper">
           <div className="topbar-wrapper">
             <Link>
-              <Logo/>
+              <img height="30" width="212" src={ Logo } alt="Helix ALM"/>
             </Link>
-            <form className="download-url-wrapper" onSubmit={formOnSubmit}>
-              {control.map((el, i) => cloneElement(el, { key: i }))}
-            </form>
           </div>
         </div>
       </div>
