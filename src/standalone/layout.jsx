@@ -26,8 +26,6 @@ export default class StandaloneLayout extends React.Component {
     return (
 
       <Container className='swagger-ui'>
-        {Topbar ? <Topbar /> : null}
-        <BaseLayout />
         <ErrorBoundary targetName="Topbar">
           {Topbar ? <Topbar /> : null}
         </ErrorBoundary>
