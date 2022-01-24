@@ -1,3 +1,5 @@
+
+
 import React from "react"
 import PropTypes from "prop-types"
 
@@ -16,27 +18,20 @@ export default class StandaloneLayout extends React.Component {
   render() {
     const { getComponent } = this.props
     const Container = getComponent("Container")
-    const Row = getComponent("Row")
-    const Col = getComponent("Col")
     const Topbar = getComponent("Topbar", true)
     const BaseLayout = getComponent("BaseLayout", true)
-    const OnlineValidatorBadge = getComponent("onlineValidatorBadge", true)
     const ErrorBoundary = getComponent("ErrorBoundary", true)
 
 
     return (
+
       <Container className='swagger-ui'>
+        {Topbar ? <Topbar /> : null}
+        <BaseLayout />
         <ErrorBoundary targetName="Topbar">
           {Topbar ? <Topbar /> : null}
         </ErrorBoundary>
         <BaseLayout />
-        <ErrorBoundary targetName="OnlineValidatorBadge">
-          <Row>
-            <Col>
-              <OnlineValidatorBadge />
-            </Col>
-          </Row>
-        </ErrorBoundary>
       </Container>
     )
   }
