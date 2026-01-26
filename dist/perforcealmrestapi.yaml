@@ -1,23 +1,35 @@
 openapi: 3.0.0
 info:
   version: 0.0.1
-  title: Helix ALM REST API
+  title: Perforce ALM REST API
   description: >-
-    The Helix ALM REST API lets developers extend Helix ALM to automate tasks
-    and develop applications that integrate with Helix ALM.
+    The Perforce ALM REST API lets developers extend Perforce ALM to automate tasks
+    and develop applications that integrate with Perforce ALM.
 
 
 
-    This documentation is for Helix ALM {{HALM_VERSION}}.
+    This documentation is for Perforce ALM {{HALM_VERSION}}.
 
     * [Additional REST API help](https://help.perforce.com/alm/helixalm/{{HALM_VERSION}}/restapi/Default.htm)
 
     * [REST API examples](http://ftp.perforce.com/alm/helixalm/extras/restapiexamples/)
 
     * [Contact Perforce Support](https://www.perforce.com/support/request-support)
-
-
-    Copyright 1996-2021 Perforce Software, Inc. and its subsidiaries. All rights reserved.
+    
+    
+    **Important:** Helix ALM was renamed to Perforce ALM. Existing URLs that contain `helix-alm` are still supported.
+    Using `perforce-alm` is also supported in URLs when using ALM 2026.1 and later. For example, both of the following 
+    URLs are supported:
+    
+    ```
+    
+    https://localhost:8443/helix-alm/api/v0/projects
+    
+    https://localhost:8443/perforce-alm/api/v0/projects
+    
+    ```
+    
+    <p id="copyright-line" style="font-size: 11px;" >Copyright 1996-2026 Perforce Software, Inc. and its subsidiaries. All rights reserved.</p>
 tags:
   - name: projects
     description: Requests for retrieving and switching projects
@@ -53,22 +65,24 @@ tags:
     description: Requests for viewing and updating links on test cases
   - name: test case folders
     description: Requests for viewing and updating folders that contain specific test cases
+  - name: test case automation
+    description: Requests for viewing automation information related to test cases
   - name: test runs
-    description: Requests for viewing and updating test runs
+    description: Requests for viewing and updating manual test runs
   - name: test run attachments
-    description: Requests for viewing and updating files attached to test runs
+    description: Requests for viewing and updating files attached to manual test runs
   - name: test run events
-    description: Requests for viewing and updating test run workflow events
+    description: Requests for viewing and updating manual test run workflow events
   - name: test run scripts
-    description: Requests for viewing and updating scripts attached to test runs
+    description: Requests for viewing and updating scripts attached to manual test runs
   - name: test run steps
-    description: Requests for viewing and updating test run steps
+    description: Requests for viewing and updating manual test run steps
   - name: test run variants
-    description: Requests for viewing and updating test run variants
+    description: Requests for viewing and updating manual test run variants
   - name: test run links
-    description: Requests for viewing and updating links on test runs
+    description: Requests for viewing and updating links on manual test runs
   - name: test run folders
-    description: Requests for viewing and updating folders that contain specific test runs
+    description: Requests for viewing and updating folders that contain specific manual test runs
   - name: requirements
     description: Requests for viewing and updating requirements
   - name: requirement attachments
@@ -99,7 +113,13 @@ tags:
   - name: document folders
     description: Requests for viewing and updating folders that contain specific documents
   - name: folders
-    description: Requests for view and updating folders
+    description: Requests for viewing and updating folders
+  - name: automation suites
+    description: Requests for viewing and updating automation suites
+  - name: automation builds
+    description: Requests for viewing automation builds
+  - name: automation results
+    description: Requests for viewing automated test results
   - name: menus
     description: Requests for viewing and updating lists of values used by dropdown fields. These are referred to as menus in the REST API.
   - name: fields
@@ -116,6 +136,8 @@ tags:
     description: Requests for viewing and updating folder types
   - name: requirement types
     description: Requests for viewing and updating requirement types
+  - name: automated test configurations
+    description: Requests for viewing and updating automated testing configurations
   - name: administration
     description: Requests for performing administrative actions
   - name: files
@@ -160,8 +182,8 @@ paths:
   /versions:
     x-exegesis-controller: misc_controllers
     get:
-      summary: Get version information for the Helix ALM Server and Helix ALM REST API
-      description: Gets version information for the Helix ALM Server and Helix ALM REST API.
+      summary: Get version information for the Perforce ALM Server and Perforce ALM REST API
+      description: Gets version information for the Perforce ALM Server and Perforce ALM REST API.
       operationId: getVersions
       tags:
         - misc
@@ -175,8 +197,8 @@ paths:
   /projects:
     x-exegesis-controller: get_ProjectList
     get:
-      summary: Get a list of all projects from the Helix ALM Server
-      description: Gets a list of all projects from the Helix ALM Server. Only includes
+      summary: Get a list of all projects from the Perforce ALM Server
+      description: Gets a list of all projects from the Perforce ALM Server. Only includes
         projects the logged in user can access.
       operationId: getProjectList
       tags:
@@ -218,8 +240,8 @@ paths:
   "/{projectID}/token":
     x-exegesis-controller: get_AccessToken
     get:
-      summary: Get an access token for a Helix ALM user based on a username and password
-      description: Gets an access token for a Helix ALM user based on a specified username
+      summary: Get an access token for a Perforce ALM user based on a username and password
+      description: Gets an access token for a Perforce ALM user based on a specified username
         and password. Tokens are used to authorize subsequent requests by the
         user. See
         [Authorization](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=Authorization)
@@ -380,7 +402,7 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_Issues
-      summary: Add one or more issues
+      summary: Add issues
       description: Adds one or more new issues to a project.
       operationId: createNewIssues
       tags:
@@ -412,7 +434,7 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_Issues
-      summary: Update one or more issues
+      summary: Update issues
       description: >
         Updates one or more issues. Keep the following in mind:
            * You cannot update attachments or events with a PUT.
@@ -967,7 +989,7 @@ paths:
     get:
       x-exegesis-controller: get_Issues
       summary: Get a list of links
-      description: Gets the list of links reference this issue.
+      description: Gets the list of links reference the issue.
       operationId: getIssueLinks
       tags:
         - issue links
@@ -1004,7 +1026,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "201":
@@ -1037,7 +1059,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "200":
@@ -1221,7 +1243,7 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestCases
-      summary: Add one or more test cases
+      summary: Add test cases
       description: Adds one or more new test cases to a project.
       operationId: createNewTestCases
       tags:
@@ -1253,8 +1275,8 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestCases
-      summary: Update one or more test cases
-      description: Update one or more test cases. All existing step data is replaced with
+      summary: Update test cases
+      description: Updates one or more test cases. All existing step data is replaced with
         the data in the request.
       operationId: updateTestCases
       tags:
@@ -1398,7 +1420,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/projectID"
       requestBody:
-        $ref: "#/components/requestBodies/TestObjectSearchBody"
+        $ref: "#/components/requestBodies/TestCaseSearchBody"
       x-perforce-bodyname: body
       responses:
         "200":
@@ -1908,7 +1930,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "201":
@@ -1941,7 +1963,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "200":
@@ -2081,12 +2103,51 @@ paths:
           $ref: "#/components/responses/RateLimitError"
         default:
           $ref: "#/components/responses/Error"
+  "/{projectID}/testCases/{itemID}/automation/results":
+    get:
+      x-exegesis-controller: get_TestCases
+      summary: Get a list of automated test results for a test case
+      description: Gets a list of automated test results that reference a specific test case.
+      operationId: getTestCaseAutomationResults
+      tags:
+        - test case automation
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/itemID"
+        - $ref: "#/components/parameters/automationResultBuildNumber"
+        - $ref: "#/components/parameters/automationResultBuildNumberMatchType"
+        - $ref: "#/components/parameters/automationResultStatusType"
+        - $ref: "#/components/parameters/automationResultSuiteType"
+        - $ref: "#/components/parameters/automationResultBuildDateMin"
+        - $ref: "#/components/parameters/automationResultBuildDateMax"
+        - $ref: "#/components/parameters/automationResultBuildTestRunSetsType"
+        - $ref: "#/components/parameters/automationResultSortBy"
+        - $ref: "#/components/parameters/sort_order"
+        - $ref: "#/components/parameters/include_total"
+        - $ref: "#/components/parameters/perPage"
+        - $ref: "#/components/parameters/page"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetTestCaseAutomationResultsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
   "/{projectID}/testRuns":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of test runs from a project
+      summary: Get a list of manual test runs from a project
       description: >
-        Gets a list of test runs from a project. To narrow the list of returned
+        Gets a list of manual test runs from a project. To narrow the list of returned
         test runs, use a simple query string in the request URL. See [Limiting
         items returned from GET
         resources](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=LimitingItemsGet)
@@ -2107,7 +2168,7 @@ paths:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
         - $ref: "#/components/parameters/formattedText"
-        - $ref: "#/components/parameters/testcaseExpand"
+        - $ref: "#/components/parameters/testrunExpand"
       responses:
         "200":
           $ref: "#/components/responses/GetTestRunsResponse"
@@ -2123,10 +2184,9 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update one or more test runs
+      summary: Update manual test runs
       description: >
-        Updates one or more test runs.
-
+        Updates one or more manual test runs.
 
         Test run steps are read only. You cannot edit the step text. The API expects to receive the same step structure when you update a test run, but you can update the following depending on the View Mode.
 
@@ -2157,7 +2217,7 @@ paths:
               properties:
                 testRuns:
                   $ref: "#/components/schemas/TestRunArray"
-        description: Array of test runs to create or update
+        description: Array of manual test runs to create or update
         required: true
       x-perforce-bodyname: testRuns
       responses:
@@ -2178,8 +2238,8 @@ paths:
   "/{projectID}/testRuns/{itemID}":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a specific test run
-      description: Gets a specific test run based on the item ID.
+      summary: Get a specific manual test run
+      description: Gets a specific manual test run based on the item ID.
       operationId: getTestRunByID
       tags:
         - test runs
@@ -2191,7 +2251,7 @@ paths:
         - $ref: "#/components/parameters/itemID"
         - $ref: "#/components/parameters/fieldArray"
         - $ref: "#/components/parameters/formattedText"
-        - $ref: "#/components/parameters/testcaseExpand"
+        - $ref: "#/components/parameters/testrunExpand"
       responses:
         "200":
           description: Success
@@ -2227,9 +2287,9 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update a specific test run
+      summary: Update a specific manual test run
       description: >
-        Update a specific test run based on item ID.<br/><br/>
+        Update a specific manual test run based on item ID.<br/><br/>
 
 
         Test run steps are read only. You cannot edit the step text. The API expects to receive the same step structure when you update a test run, but you can update the following depending on the View Mode.
@@ -2258,7 +2318,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/TestRun"
-        description: Contents of test run to update in JSON
+        description: Contents of manual test run to update in JSON
         required: true
       x-perforce-bodyname: testRun
       responses:
@@ -2293,8 +2353,8 @@ paths:
   "/{projectID}/testRuns/search":
     post:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of test runs based on a query
-      description: Gets a list of test runs based on a custom query.
+      summary: Get a list of manual test runs based on a query
+      description: Gets a list of manual test runs based on a custom query.
       operationId: getTestRunsByPost
       tags:
         - test runs
@@ -2304,7 +2364,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/projectID"
       requestBody:
-        $ref: "#/components/requestBodies/TestObjectSearchBody"
+        $ref: "#/components/requestBodies/TestRunSearchBody"
       x-perforce-bodyname: body
       responses:
         "200":
@@ -2324,15 +2384,15 @@ paths:
   "/{projectID}/testRuns/generate":
     post:
       x-exegesis-controller: actions_TestRuns
-      summary: Generate test runs from test cases
+      summary: Generate manual test runs from test cases
       description: >
-        Generates test runs from one or more test cases. A test case must be in
+        Generates manual test runs from one or more test cases. A test case must be in
         a workflow state that allows test runs to be generated. Any test
         variants specified must exist in the project.<br/>
 
         You can also add events to test runs and add them to a folder when generating them.<br/>
 
-        **Note:** If the Helix ALM project has enhanced compliance for test runs enabled in the project options, you cannot enter workflow events when generating test runs.
+        **Note:** If the Perforce ALM project has enhanced compliance for test runs enabled in the project options, you cannot enter workflow events when generating test runs.
       operationId: generateTestRuns
       tags:
         - test runs
@@ -2346,7 +2406,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/GenerateTestRunParams"
-        description: Parameters used to generate test runs
+        description: Parameters used to generate manual test runs
         required: true
       x-perforce-bodyname: params
       responses:
@@ -2369,8 +2429,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/attachments":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of files attached to a test run
-      description: Gets file attachment metadata for a specific test run.
+      summary: Get a list of files attached to a manual test run
+      description: Gets file attachment metadata for a specific manual test run.
       operationId: getTestRunAttachments
       tags:
         - test run attachments
@@ -2395,8 +2455,8 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestRuns
-      summary: Attach a file to a test run
-      description: Attaches a files to a specific test run.
+      summary: Attach a file to a manual test run
+      description: Attaches a file to a specific manual test run.
       operationId: uploadTestRunAttachment
       tags:
         - test run attachments
@@ -2426,8 +2486,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/attachments/{attachmentID}":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get metadata about a file attached to a test run
-      description: Gets metadata about a specific file attached to a specific test run.
+      summary: Get metadata about a file attached to a manual test run
+      description: Gets metadata about a specific file attached to a specific manual test run.
       operationId: getTestRunAttachmentsByID
       tags:
         - test run attachments
@@ -2454,8 +2514,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/events":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get workflow events from a test run
-      description: Gets workflow event information from a specific test run.
+      summary: Get workflow events from a manual test run
+      description: Gets workflow event information from a specific manual test run.
       operationId: getTestRunEvents
       tags:
         - test run events
@@ -2480,8 +2540,8 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestRuns
-      summary: Add workflow events to a test run
-      description: Adds one or more workflow events to a specific test run.
+      summary: Add workflow events to a manual test run
+      description: Adds one or more workflow events to a specific manual test run.
       operationId: createTestRunEvents
       tags:
         - test run events
@@ -2512,8 +2572,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/events/{eventID}":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a specific workflow event from a test run
-      description: Gets a specific workflow event from a specific test run.
+      summary: Get a specific workflow event from a manual test run
+      description: Gets a specific workflow event from a specific manual test run.
       operationId: getTestRunEventsByID
       tags:
         - test run events
@@ -2540,8 +2600,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/events/{eventID}/attachments":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of files attached to a workflow event in a test run
-      description: Gets a list of files attached to a specific workflow event in a specific
+      summary: Get a list of files attached to a workflow event in a manual test run
+      description: Gets a list of files attached to a specific workflow event in a specific manual
         test run.
       operationId: getTestRunEventsAttachments
       tags:
@@ -2568,8 +2628,8 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestRuns
-      summary: Attach a file to a workflow event in a test run
-      description: Attaches a file to a specific workflow event in a specific test run.
+      summary: Attach a file to a workflow event in a manual test run
+      description: Attaches a file to a specific workflow event in a specific manual test run.
       operationId: uploadTestRunEventAttachment
       tags:
         - test run events
@@ -2600,9 +2660,9 @@ paths:
   "/{projectID}/testRuns/{itemID}/events/{eventID}/attachments/{attachmentID}":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get metadata about a file attached to a workflow event in a test run
+      summary: Get metadata about a file attached to a workflow event in a manual test run
       description: Gets metadata about a specific file attached to a specific workflow
-        event in a specific test run.
+        event in a specific manual test run.
       operationId: getTestRunEventsAttachmentsByID
       tags:
         - test run events
@@ -2630,8 +2690,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/scripts":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of script attachment metadata for a test run
-      description: Gets a list of script attachment metadata for a specific test run.
+      summary: Get a list of script attachment metadata for a manual test run
+      description: Gets a list of script attachment metadata for a specific manual test run.
       operationId: getTestRunScripts
       tags:
         - test run scripts
@@ -2657,8 +2717,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/steps":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get the steps from a test run
-      description: Gets the steps from a specific test run.
+      summary: Get the steps from a manual test run
+      description: Gets the steps from a specific manual test run.
       operationId: getTestRunSteps
       tags:
         - test run steps
@@ -2683,9 +2743,9 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update the steps in a specific test run
+      summary: Update the steps in a specific manual test run
       description: >
-        Update the steps in a specific test run.<br/><br/>
+        Update the steps in a specific manual test run.<br/><br/>
 
 
         Test run steps are read only. You cannot edit the step text. The API expects to receive the same step structure when you update a test run, but you can update the following depending on the View Mode.<br/><br/>
@@ -2753,8 +2813,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/variants":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of test variants from a test run
-      description: Gets test variants included or excluded when the test run was generated
+      summary: Get a list of test variants from a manual test run
+      description: Gets test variants included or excluded when the manual test run was generated
         and added at run time for a specific test run.
       operationId: getTestRunVariants
       tags:
@@ -2780,8 +2840,8 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update the test variants for a test run
-      description: Updates test variants included or excluded when the test run was
+      summary: Update the test variants for a manual test run
+      description: Updates test variants included or excluded when the manual test run was
         generated and added at run time for a specific test run.
       operationId: updateTestRunVariants
       tags:
@@ -2836,8 +2896,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/links":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of links from a test run
-      description: Gets a list of links with references to a specific test run.
+      summary: Get a list of links from a manual test run
+      description: Gets a list of links with references to a specific manual test run.
       operationId: getTestRunLinks
       tags:
         - test run links
@@ -2862,8 +2922,8 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestRuns
-      summary: Add links to a test run
-      description: Adds one or more links to a specific test run.
+      summary: Add links to a manual test run
+      description: Adds one or more links to a specific manual test run.
       operationId: createTestRunLinks
       tags:
         - test run links
@@ -2874,7 +2934,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "201":
@@ -2895,8 +2955,8 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update links on a test run
-      description: Update one or more links on a specific test run.
+      summary: Update links on a manual test run
+      description: Update one or more links on a specific manual test run.
       operationId: updateTestRunLinks
       tags:
         - test run links
@@ -2907,7 +2967,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "200":
@@ -2929,8 +2989,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/folders":
     get:
       x-exegesis-controller: get_TestRuns
-      summary: Get a list of folders for a test run
-      description: Gets a list of folders that reference a specific test run.
+      summary: Get a list of folders for a manual test run
+      description: Gets a list of folders that reference a specific manual test run.
       operationId: getTestRunFolders
       tags:
         - test run folders
@@ -2955,8 +3015,8 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_TestRuns
-      summary: Add a test run to folders
-      description: Adds one or more folders to a specific test run.
+      summary: Add manual test runs to folders
+      description: Adds one or more folders to a specific manual test run.
       operationId: createTestRunFolders
       tags:
         - test run folders
@@ -2988,8 +3048,8 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_TestRuns
-      summary: Update folders on a test run
-      description: Updates the folders for a specific test run.
+      summary: Update folders on a manual test run
+      description: Updates the folders for a specific manual test run.
       operationId: updateTestRunFolders
       tags:
         - test run folders
@@ -3022,8 +3082,8 @@ paths:
   "/{projectID}/testRuns/{itemID}/folders/{folderID}":
     delete:
       x-exegesis-controller: modify_TestRuns
-      summary: Remove a test run from a folder
-      description: Removes a specific test run from a specific folder.
+      summary: Remove a manual test run from a folder
+      description: Removes a specific manual test run from a specific folder.
       operationId: removeTestRunFromFolderByID
       tags:
         - test run folders
@@ -3089,7 +3149,7 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_Requirements
-      summary: Add one or more requirements
+      summary: Add requirements
       description: Adds one or more new requirements to a project.
       operationId: createNewRequirements
       tags:
@@ -3121,7 +3181,7 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_Requirements
-      summary: Update one or more requirements
+      summary: Update requirements
       description: Updates one or more requirements.
       operationId: updateRequirements
       tags:
@@ -3645,7 +3705,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "201":
@@ -3678,7 +3738,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "200":
@@ -3860,7 +3920,7 @@ paths:
           $ref: "#/components/responses/Error"
     post:
       x-exegesis-controller: modify_Documents
-      summary: Add one or more new requirement documents
+      summary: Add requirement documents
       description: Adds one or more new requirement documents to a project.
       operationId: createNewDocuments
       tags:
@@ -3892,7 +3952,7 @@ paths:
           $ref: "#/components/responses/Error"
     put:
       x-exegesis-controller: modify_Documents
-      summary: Update one or more requirement documents
+      summary: Update requirement documents
       description: Updates one or more requirement documents.
       operationId: updateDocuments
       tags:
@@ -4433,7 +4493,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "201":
@@ -4455,7 +4515,7 @@ paths:
     put:
       x-exegesis-controller: modify_Documents
       summary: Update links on a requirement document
-      description: Update one or more links on a specific requirement document.
+      description: Updates one or more links on a specific requirement document.
       operationId: updateDocumentLinks
       tags:
         - document links
@@ -4466,7 +4526,7 @@ paths:
         - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/itemID"
       requestBody:
-        $ref: "#/components/requestBodies/createIssueLinksLinksdata"
+        $ref: "#/components/requestBodies/createLinksData"
       x-perforce-bodyname: linksData
       responses:
         "200":
@@ -5141,11 +5201,675 @@ paths:
           $ref: "#/components/responses/RateLimitError"
         default:
           $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of automation suites
+      description: Gets a list of automation suites from a project.
+      operationId: getAutomationSuites
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/testCaseIDFilter"
+        - $ref: "#/components/parameters/automationScriptID"
+        - $ref: "#/components/parameters/automationTestCasesExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationSuitesResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Add automation suites
+      description: Adds one or more new automation suites to a project.
+      operationId: createAutomationSuites
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateCreateAutomationSuites"
+      x-perforce-bodyname: automationSuitesData
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationSuitesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a specific automation suite
+      description: Gets a specific automation suite based on the ID.
+      operationId: getAutomationSuiteByID
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/automationTestCasesExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationSuiteByIDResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    put:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Update a specific automation suite
+      description: Updates a specific automation suite.
+      operationId: updateAutomationSuiteByID
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateAutomationSuite"
+      x-perforce-bodyname: automationSuite
+      responses:
+        "204":
+          $ref: "#/components/responses/UpdatedNoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/run":
+    post:
+      x-exegesis-controller: actions_AutomationSuites
+      summary: Run an automation suite
+      description: Runs an automation suite that has a run configuration.
+      operationId: runAutomationSuite
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+      requestBody:
+        $ref: "#/components/requestBodies/runAutomationSuite"
+      x-perforce-bodyname: params
+      responses:
+        "201":
+          $ref: "#/components/responses/RunAutomationSuiteResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestWithSSL"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/submitBuild":
+    post:
+      x-exegesis-controller: actions_AutomationSuites
+      summary: Submit a build and results to an automation suite
+      description: Submits an automation build and results to an automation suite.
+      operationId: submitAutomationBuild
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+      requestBody:
+        $ref: "#/components/requestBodies/submitAutomationBuild"
+      x-perforce-bodyname: params
+      responses:
+        "201":
+          $ref: "#/components/responses/SubmitAutomationBuildResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/testCases":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of test cases for an automation suite
+      description: Gets a list of test cases for an automation suite.
+      operationId: getAutomationSuiteTestCases
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationTestCaseSetContainer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Add test cases to an automation suite
+      description: Adds one or more test cases to an automation suite.
+      operationId: createAutomationSuiteTestCases
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateCreateAutomationTestCases"
+      x-perforce-bodyname: testCasesData
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationTestCaseSetContainer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/testCases/{testCaseID}":
+    delete:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Remove a test case from an automation suite
+      description: Removes a specific test case from an automation suite.
+      operationId: deleteAutomationSuiteTestCaseByID
+      tags:
+        - automation suites
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/testCaseID"
+      responses:
+        "204":
+          $ref: "#/components/responses/DeletedNoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of builds for an automation suite
+      description: Gets a filtered, sorted, and paged list of automation builds for an automation suite.
+      operationId: getAutomationBuilds
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/automationBuildNumber"
+        - $ref: "#/components/parameters/automationBuildNumberMatchType"
+        - $ref: "#/components/parameters/automationBuildBranch"
+        - $ref: "#/components/parameters/automationBuildBranchMatchType"
+        - $ref: "#/components/parameters/automationBuildDescription"
+        - $ref: "#/components/parameters/automationBuildDescriptionMatchType"
+        - $ref: "#/components/parameters/automationBuildSource"
+        - $ref: "#/components/parameters/automationBuildSourceMatchType"
+        - $ref: "#/components/parameters/automationBuildDateMin"
+        - $ref: "#/components/parameters/automationBuildDateMax"
+        - $ref: "#/components/parameters/automationBuildStartDateMin"
+        - $ref: "#/components/parameters/automationBuildStartDateMax"
+        - $ref: "#/components/parameters/automationBuildDurationMin"
+        - $ref: "#/components/parameters/automationBuildDurationMax"
+        - $ref: "#/components/parameters/automationBuildResultsBlockedMin"
+        - $ref: "#/components/parameters/automationBuildResultsBlockedMax"
+        - $ref: "#/components/parameters/automationBuildResultsPassedMin"
+        - $ref: "#/components/parameters/automationBuildResultsPassedMax"
+        - $ref: "#/components/parameters/automationBuildResultsFailedMin"
+        - $ref: "#/components/parameters/automationBuildResultsFailedMax"
+        - $ref: "#/components/parameters/automationBuildResultsSkippedMin"
+        - $ref: "#/components/parameters/automationBuildResultsSkippedMax"
+        - $ref: "#/components/parameters/automationBuildResultsUnknownMin"
+        - $ref: "#/components/parameters/automationBuildResultsUnknownMax"
+        - $ref: "#/components/parameters/automationBuildResultsTotalMin"
+        - $ref: "#/components/parameters/automationBuildResultsTotalMax"
+        - $ref: "#/components/parameters/automationBuildStatusType"
+        - $ref: "#/components/parameters/automationBuildTestRunSetsType"
+        - $ref: "#/components/parameters/automationBuildTestUsersType"
+        - $ref: "#/components/parameters/automationBuildProtected"
+        - $ref: "#/components/parameters/automationBuildSortBy"
+        - $ref: "#/components/parameters/sort_order"
+        - $ref: "#/components/parameters/include_total"
+        - $ref: "#/components/parameters/perPage"
+        - $ref: "#/components/parameters/page"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationBuildsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a specific build
+      description: Gets a specific automation build for an automation suite.
+      operationId: getAutomationBuildByID
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/buildExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationBuildByIDResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    put:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Update a specific build
+      description: Updates a specific automation build for an automation suite.
+      operationId: updateAutomationBuildByID
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateAutomationBuild"
+      x-perforce-bodyname: build
+      responses:
+        "204":
+          $ref: "#/components/responses/UpdatedNoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    delete:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Delete a build from an automation suite
+      description: Deletes a specific automation build from an automation suite.
+      operationId: deleteAutomationBuildByID
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/automationBuildBreakLinks"
+      responses:
+        "204":
+          $ref: "#/components/responses/DeletedNoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/testCases":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of test cases related to an build
+      description: Gets a list of test cases related to an automation build.
+      operationId: getAutomationBuildTestCases
+      tags:
+        - automation builds
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/buildExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationTestCaseSetContainer"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/results":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of test results for an automation build
+      description: Gets a list of automated test results for an automation build.
+      operationId: getAutomationResults
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/automationResultsExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationResultsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/results/{resultID}":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a specific test result for a build
+      description: Gets a specific automation test result for an automation build.
+      operationId: getAutomationResultByID
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/resultID"
+        - $ref: "#/components/parameters/automationResultsExpand"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationResultByIDResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/results/associate":
+    post:
+      x-exegesis-controller: actions_AutomationSuites
+      summary: Update a specific build and test results to associate results with test cases
+      description: Updates a specific automation build and automated test results to associate results with test cases.
+        Optionally update an automation suite to include the new associations.
+      operationId: associateAutomationResults
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+      requestBody:
+        $ref: "#/components/requestBodies/associateAutomationResults"
+      responses:
+        "201":
+          $ref: "#/components/responses/CreatedNoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/results/{resultID}/testCases":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of test cases referenced by an automated test result
+      description: Gets a list of test cases referenced by a specific automated test result.
+      operationId: getAutomationResultTestCases
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/resultID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomationResultTestCasesResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/automationSuites/{automationSuiteID}/builds/{buildID}/results/{resultID}/links":
+    get:
+      x-exegesis-controller: get_AutomationSuites
+      summary: Get a list of links that reference an automated test result
+      description: Gets the list of links that reference a specific automated test result.
+      operationId: getAutomationResultLinks
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            [ ]
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/resultID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLinksResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Add links to an automated test result
+      description: Adds one or more links to a specific automated test result.
+      operationId: createAutomationResultLinks
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/resultID"
+      requestBody:
+        $ref: "#/components/requestBodies/createLinksData"
+      x-perforce-bodyname: linksData
+      responses:
+        "201":
+          $ref: "#/components/responses/UpdatedLinksResponse"
+        "206":
+          $ref: "#/components/responses/PartialUpdatedLinksResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    put:
+      x-exegesis-controller: modify_AutomationSuites
+      summary: Update links on an automated test result
+      description: Updates one or more links on a specific automated test result.
+      operationId: updateAutomationResultLinks
+      tags:
+        - automation results
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automationSuiteID"
+        - $ref: "#/components/parameters/buildID"
+        - $ref: "#/components/parameters/resultID"
+      requestBody:
+        $ref: "#/components/requestBodies/createLinksData"
+      x-perforce-bodyname: linksData
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdatedLinksResponse"
+        "206":
+          $ref: "#/components/responses/PartialUpdatedLinksResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
   "/{projectID}/admin/sessions":
     get:
       x-exegesis-controller: get_Sessions
       summary: Get a list of active user sessions
-      description: Gets a list of active user sessions on the Helix ALM Server.
+      description: Gets a list of active user sessions on the Perforce ALM Server.
       operationId: getSessions
       tags:
         - administration
@@ -5165,8 +5889,8 @@ paths:
           $ref: "#/components/responses/Error"
     delete:
       x-exegesis-controller: delete_Sessions
-      summary: End all active user sessions on the Helix ALM Server
-      description: Ends all active user sessions on the Helix ALM Server.
+      summary: End all active user sessions on the Perforce ALM Server
+      description: Ends all active user sessions on the Perforce ALM Server.
       operationId: deleteSessions
       tags:
         - administration
@@ -5202,7 +5926,7 @@ paths:
     get:
       x-exegesis-controller: get_Sessions
       summary: Get information about a specific user session
-      description: Gets information about a specific user session on the Helix ALM Server.
+      description: Gets information about a specific user session on the Perforce ALM Server.
       operationId: getSessionsByID
       tags:
         - administration
@@ -5223,8 +5947,8 @@ paths:
           $ref: "#/components/responses/Error"
     delete:
       x-exegesis-controller: delete_Sessions
-      summary: End a specific active user session on the Helix ALM Server
-      description: Ends a specific active user session on the Helix ALM Server.
+      summary: End a specific active user session on the Perforce ALM Server
+      description: Ends a specific active user session on the Perforce ALM Server.
       operationId: deleteSessionsByID
       tags:
         - administration
@@ -5575,7 +6299,7 @@ paths:
       summary: Reorder the list of custom fields or test variants
       description: >
         Reorders the list of custom fields or test variants. Custom fields and test variants cannot be added,
-        deleted, or edited using this method. The list of fields or test variants on the Helix ALM Server
+        deleted, or edited using this method. The list of fields or test variants on the Perforce ALM Server
         will be updated to match the specified order. Any fields not included in this request will be moved to the end
         of the list of fields.
       operationId: reorderCustomFields
@@ -5603,7 +6327,7 @@ paths:
     get:
       x-exegesis-controller: get_Fields
       summary: Get a list of system fields
-      description: Gets a list of system fields based on item type. System fields are built-in Helix ALM fields.
+      description: Gets a list of system fields based on item type. System fields are built-in Perforce ALM fields.
       operationId: getFieldsByTypeSystem
       tags:
         - fields
@@ -6556,9 +7280,162 @@ paths:
           $ref: "#/components/responses/RateLimitError"
         default:
           $ref: "#/components/responses/Error"
-
+  "/{projectID}/configs/automatedTestConfigs":
+    get:
+      x-exegesis-controller: get_AutomatedTestConfigs
+      summary: Get a list of automated testing configurations
+      description: Gets a list of automated testing configurations.
+      operationId: getAutomatedTestConfigs
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomatedTestConfigsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      x-exegesis-controller: modify_AutomatedTestConfigs
+      summary: Add automated testing configurations.
+      description: Adds a list of automated testing configurations.
+      operationId: createAutomatedTestConfigs
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateCreateAutomatedTestConfigs"
+      x-perforce-bodyname: automatedTestConfigsData
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomatedTestConfigsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestWithSSL"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/configs/automatedTestConfigs/{automatedTestConfigID}":
+    get:
+      x-exegesis-controller: get_AutomatedTestConfigs
+      summary: Get a specific automated testing configuration
+      description: Gets a specfic automated testing configuration based on the ID.
+      operationId: getAutomatedTestConfigByID
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automatedTestConfigID"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAutomatedTestConfigResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    put:
+      x-exegesis-controller: modify_AutomatedTestConfigs
+      summary: Update a specific automated testing configuration
+      description: Updates a specific automated testing configuration based on the ID.
+      operationId: updateAutomatedTestConfigByID
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automatedTestConfigID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateAutomatedTestConfig"
+      x-perforce-bodyname: automatedTestConfig
+      responses:
+        "204":
+          $ref: "#/components/responses/UpdatedNoContent"
+        "400":
+          $ref: "#/components/responses/BadRequestWithSSL"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+    delete:
+      x-exegesis-controller: modify_AutomatedTestConfigs
+      summary: Delete a specific automated testing configuration
+      description: Deletes a specific automated testing configuration based on ID.
+      operationId: deleteAutomatedTestConfigByID
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automatedTestConfigID"
+      responses:
+        "201":
+          $ref: "#/components/responses/DeletedNoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
+  "/{projectID}/configs/automatedTestConfigs/{automatedTestConfigID}/userConfig":
+    put:
+      x-exegesis-controller: modify_AutomatedTestConfigs
+      summary: Set user-specific information a specific automated testing configuration
+      description: Sets user-specific information a specific automated testing configuration. For example, this can allow
+        a user to set authentication information their specific account, which is used when performing actions
+        using the automated testing configuration.
+      operationId: updateAutomatedUserTestConfig
+      tags:
+        - automated test configurations
+      security:
+        - accessBearerToken:
+            []
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/automatedTestConfigID"
+      requestBody:
+        $ref: "#/components/requestBodies/updateAutomatedTestConfigUserAuth"
+      x-perforce-bodyname: userTestConfig
+      responses:
+        "204":
+          $ref: "#/components/responses/UpdatedNoContent"
+        "400":
+          $ref: "#/components/responses/BadRequestWithSSL"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        default:
+          $ref: "#/components/responses/Error"
 servers:
-  - url: /helix-alm/api/v0
+  - url: /perforce-alm/api/v0
 components:
   parameters:
     projectID:
@@ -6665,6 +7542,25 @@ components:
             - steps
             - links
             - folders
+    testrunExpand:
+      name: expand
+      description: |
+        Properties to expand to show the sub-objects within them
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - attachments
+            - scripts
+            - events
+            - variants
+            - steps
+            - links
+            - folders
+
     requirementExpand:
       name: expand
       description: |
@@ -6760,7 +7656,7 @@ components:
     itemID:
       name: itemID
       in: path
-      description: Record ID for a Helix ALM item
+      description: Record ID for a Perforce ALM item
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
@@ -6837,28 +7733,35 @@ components:
     systemFieldID:
       name: systemFieldID
       in: path
-      description: Record ID for a specific system field.
+      description: Record ID for a specific system field
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
     typeID:
       name: typeID
       in: path
-      description: Record ID for a specific requirement type.
+      description: Record ID for a specific requirement type
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
     requirementTypeID:
       name: requirementTypeID
       in: path
-      description: Record ID for a specific requirement type.
+      description: Record ID for a specific requirement type
+      required: true
+      schema:
+        $ref: "#/components/schemas/ValidItemID"
+    automatedTestConfigID:
+      name: automatedTestConfigID
+      in: path
+      description: Record ID for a specific automated testing configuration
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
     fieldLabelID:
       name: fieldLabelID
       in: path
-      description: Record ID for a specific field label.
+      description: Record ID for a specific field label
       required: true
       example: 26165
       schema:
@@ -6866,21 +7769,62 @@ components:
     folderTypeID:
       name: folderTypeID
       in: path
-      description: Record ID for a specific folder type.
+      description: Record ID for a specific folder type
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
     folderID:
       name: folderID
       in: path
-      description: Record ID for a specific folder.
+      description: Record ID for a specific folder
+      required: true
+      schema:
+        $ref: "#/components/schemas/ValidItemID"
+    automationSuiteID:
+      name: automationSuiteID
+      in: path
+      description: Record ID for a specific automation suite
+      required: true
+      schema:
+        $ref: "#/components/schemas/ValidItemID"
+    buildID:
+      name: buildID
+      in: path
+      description: Record ID for a specific automation build
+      required: true
+      schema:
+        $ref: "#/components/schemas/ValidItemID"
+    buildExpand:
+      name: expand
+      explode: false
+      description: |
+        Properties to expand to show the sub-objects within them
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - results
+            - testCases
+    resultID:
+      name: resultID
+      in: path
+      description: Record ID for a specific automated test result
+      required: true
+      schema:
+        $ref: "#/components/schemas/ValidItemID"
+    testCaseID:
+      name: testCaseID
+      in: path
+      description: Record ID for a specific test case
       required: true
       schema:
         $ref: "#/components/schemas/ValidItemID"
     version:
       name: version
       in: query
-      description: Requirement version. 0 indicates 'current' version.
+      description: Requirement version. 0 indicates 'current' version
       schema:
         type: integer
         format: int64
@@ -6905,7 +7849,7 @@ components:
       name: replacementID
       in: query
       description: >
-        How the Helix ALM Server handles replacing the deleted menu item.
+        How the Perforce ALM Server handles replacing the deleted menu item
 
         * -1: If this is the Version list, set to -1 to delete the menu item, but leave the value as is where selected in items (e.g., issues)
 
@@ -6925,10 +7869,10 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/FieldItemTypes"
-    depth: #todo_ptv: Will there be a max depth? default depth?
+    depth:
       name: depth
       in: query
-      description: Number of levels in a tree of folders to return.
+      description: Number of levels in a tree of folders to return
       schema:
         type: integer
         format: int32
@@ -6936,11 +7880,367 @@ components:
     folderPath:
       name: path
       in: query
-      description: Path to a folder.
+      description: Path to a folder
       schema:
         type: string
         minLength: 1
-        example: Public #todo_ptv: add a better example
+        example: Public
+    testCaseIDFilter:
+      name: testCaseID
+      in: query
+      description: Filters the results to only items that include this test case ID
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 4294967295
+    automationScriptID:
+      name: automationScriptID
+      in: query
+      description: Filters the results to only items that include the specified automated test script ID
+      schema:
+        type: string
+    automationTestCasesExpand:
+      name: expand
+      explode: false
+      description: |
+        Properties to expand to show the sub-objects within them
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - testCases
+    automationResultsExpand:
+      name: expand
+      explode: false
+      description: |
+        Properties to expand to show the sub-objects within them
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - testCases
+            - links
+    devicesExpand:
+      name: expand
+      explode: false
+      description: |
+        Properties to expand to show the sub-objects within them
+      in: query
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - mobile
+            - virtual
+            - desktop
+    automationBuildNumber:
+      name: number
+      description: Automation build number
+      in: query
+      schema:
+        type: string
+    automationBuildNumberMatchType:
+      name: number_match_type
+      description: How to match the automation build number
+      in: query
+      schema:
+        $ref: "#/components/schemas/StringMatchType"
+    automationBuildBranch:
+      name: branch
+      description: Automation build branch
+      in: query
+      schema:
+        type: string
+    automationBuildBranchMatchType:
+      name: branch_match_type
+      description: How to match the automation build branch
+      in: query
+      schema:
+        $ref: "#/components/schemas/StringMatchType"
+    automationBuildDescription:
+      name: description
+      description: Automation build description
+      in: query
+      schema:
+        type: string
+    automationBuildDescriptionMatchType:
+      name: description_match_type
+      description: How to match the automation build description
+      in: query
+      schema:
+        $ref: "#/components/schemas/StringMatchType"
+    automationBuildSource:
+      name: source
+      description: Automation build source
+      in: query
+      schema:
+        type: string
+    automationBuildSourceMatchType:
+      name: source_match_type
+      description: How to match the automation build source
+      in: query
+      schema:
+        $ref: "#/components/schemas/StringMatchType"
+    automationBuildDateMin:
+      name: date[gte]
+      description: Find automation builds with a date later than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationBuildDateMax:
+      name: date[lte]
+      description: Find automation builds with a date earlier than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationBuildStartDateMin:
+      name: start_date[gte]
+      description: Find automation builds with a start date later than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationBuildStartDateMax:
+      name: start_date[lte]
+      description: Find automation builds with a start date earlier than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationBuildDurationMin:
+      name: duration[gte]
+      description: Find automation builds with a duration greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildDurationMax:
+      name: duration[lte]
+      description: Find automation builds with a duration less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsBlockedMin:
+      name: results_blocked[gte]
+      description: Find automation builds with the number of blocked results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsBlockedMax:
+      name: results_blocked[lte]
+      description: Find automation builds with the number of blocked results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsPassedMin:
+      name: results_passed[gte]
+      description: Find automation builds with the number of passed results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsPassedMax:
+      name: results_passed[lte]
+      description: Find automation builds with the number of passed results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsFailedMin:
+      name: results_failed[gte]
+      description: Find automation builds with the number of failed results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsFailedMax:
+      name: results_failed[lte]
+      description: Find automation builds with the number of failed results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsSkippedMin:
+      name: results_skipped[gte]
+      description: Find automation builds with the number of skipped results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsSkippedMax:
+      name: results_skipped[lte]
+      description: Find automation builds with the number of skipped results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsUnknownMin:
+      name: results_unknown[gte]
+      description: Find automation builds with the number of unknown results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsUnknownMax:
+      name: results_unknown[lte]
+      description: Find automation builds with the number of unknown results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsTotalMin:
+      name: results_total[gte]
+      description: Find automation builds with the number of total results greater than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildResultsTotalMax:
+      name: results_total[lte]
+      description: Find automation builds with the number of total results less than or equal to this value
+      in: query
+      schema:
+        type: integer
+    automationBuildStatusType:
+      name: status
+      description: Find automation builds that match any of the specified statuses
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          $ref: "#/components/schemas/AutomationBuildStatus"
+    automationBuildTestRunSetsType:
+      name: test_run_sets
+      description: |
+        Find automation builds that match any of the specified test run sets. Specify
+        the test run set ID or name.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: integer
+    automationBuildTestUsersType:
+      name: users
+      description: |
+        Find automation builds that match any of the specified users. Specifiy the user's
+        ID or login username.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: integer
+    automationBuildSortBy:
+      name: sort_by
+      description: How to sort the automation build results
+      in: query
+      schema:
+        $ref: "#/components/schemas/AutomationBuildSortColumn"
+    automationBuildProtected:
+      name: protected
+      description: Find automation builds that are protected from being automatically deleted.
+      in: query
+      schema:
+        type: boolean
+    automationBuildBreakLinks:
+      name: breakLinks
+      description: Break links when deleting an automation build
+      in: query
+      schema:
+        type: boolean
+    sort_order:
+      name: sort_order
+      in: query
+      description: Order to sort automation build results
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+    include_total:
+      name: include_total
+      in: query
+      description: |
+        Include the total count of items in the results paging information. Not specifying this could
+        improve the performance of the request.
+      schema:
+        type: boolean
+        example: false
+    automationResultStatusType:
+      name: status
+      description: |
+        Find automated test results that match any of the specified result statuses. Specify the
+        the status ID or name.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: integer
+    automationResultSuiteType:
+      name: suite
+      description: |
+        Find automated test results that are in any of the specified automation suites. Specify
+        the automation suite ID or name.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: integer
+    automationResultBuildNumber:
+      name: build_number
+      description: Automation results build number
+      in: query
+      schema:
+        type: string
+    automationResultBuildNumberMatchType:
+      name: build_number_match_type
+      description: How to match the automation results build number
+      in: query
+      schema:
+        $ref: "#/components/schemas/StringMatchType"
+    automationResultBuildDateMin:
+      name: build_date[gte]
+      description: Find automated test results with a submitted date later than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationResultBuildDateMax:
+      name: build_date[lte]
+      description: Find automated test results with a submitted date earlier than or equal to this value
+      in: query
+      schema:
+        type: string
+        format: date-time
+    automationResultSortBy:
+      name: sort_by
+      description: How to sort the list of automated test results
+      in: query
+      schema:
+        $ref: "#/components/schemas/AutomationResultSortColumn"
+    automationResultBuildTestRunSetsType:
+      name: test_run_sets
+      description: |
+        Find automation results that match any of the specified test run sets. Specify
+        the test run set ID or name.
+      in: query
+      explode: false
+      schema:
+        type: array
+        items:
+          anyOf:
+            - type: string
+            - type: integer
   responses:
     Unauthorized:
       description: Access is denied. The username/password or access token is not
@@ -6971,10 +8271,28 @@ components:
                 statusCode: 400
                 code: Bad Request
                 errorElementPath: /issues/0/fields/1/label
+    BadRequestWithSSL:
+      description: Bad request. The information provided to the server was incorrect. Check
+        the error message for additional information.
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - $ref: "#/components/schemas/ErrorResponse"
+              - $ref: "#/components/schemas/ErrorResponseWithSSL"
+          examples:
+            response:
+              value:
+                message: "Validation errors. Invalid parameter (issues): Value failed
+                  JSON schema validation. Expected type was string, but found type
+                  integer"
+                statusCode: 400
+                code: Bad Request
+                errorElementPath: /issues/0/fields/1/label
     Forbidden:
       description: >
         The user does not have access to perform the action. This could be
-        because the user does not have a valid Helix ALM license, is not in the
+        because the user does not have a valid Perforce ALM license, is not in the
         requested project, does not have the 'Allow Login Via SOAP' command
         enabled in their security group, or does not have the required security
         commands to perform the action enabled in their security group.
@@ -7046,7 +8364,7 @@ components:
                 code: Rate limit exceeded
     ServerUnavailable:
       description: The REST API Server is currently unavailable or busy. This could be
-        caused by throttling or a 'Helix ALM Server is busy' cache lock error.
+        caused by throttling or a 'Perforce ALM Server is busy' cache lock error.
       content:
         application/json:
           schema:
@@ -7563,7 +8881,7 @@ components:
               - testRuns
             properties:
               testRuns:
-                description: The array of test runs
+                description: Array of manual test runs
                 type: array
                 items:
                   $ref: "#/components/schemas/TestRun"
@@ -7613,7 +8931,7 @@ components:
               - testRuns
             properties:
               testRuns:
-                description: The array of test runs
+                description: The array of manual test runs
                 type: array
                 items:
                   $ref: "#/components/schemas/TestRun"
@@ -7639,7 +8957,7 @@ components:
         application/json:
           schema:
             type: object
-            description: Returns an array of the test runs created or updated
+            description: Returns an array of the manual test runs created or updated
             properties:
               testCases:
                 $ref: "#/components/schemas/ItemBaseArray"
@@ -7664,7 +8982,7 @@ components:
         application/json:
           schema:
             type: object
-            description: Returns an array of the test runs created or updated. If any test
+            description: Returns an array of the manual test runs created or updated. If any test
               runs could not be updated, the errors property is also included.
             properties:
               testCases:
@@ -7691,7 +9009,7 @@ components:
         application/json:
           schema:
             type: object
-            description: Returns an array of the test runs created or updated
+            description: Returns an array of the manual test runs created or updated
             properties:
               testRuns:
                 $ref: "#/components/schemas/ItemBaseArray"
@@ -7716,7 +9034,7 @@ components:
         application/json:
           schema:
             type: object
-            description: Returns an array of the test runs created or updated. If any test
+            description: Returns an array of the manual test runs created or updated. If any test
               runs could not be updated, the errors property is also included.
             properties:
               testRuns:
@@ -8107,7 +9425,7 @@ components:
                 type: string
                 readOnly: true
                 description: href to the menus list
-                example: https://localhost:8443/helix-alm/api/v0/config/menus
+                example: https://localhost:8443/perforce-alm/api/v0/config/menus
     GetMenuResponse:
       description: Success
       headers:
@@ -8248,48 +9566,48 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/FieldStyleContainer"
-#    GetConfigFieldsResponse:
-#      description: Success
-#      headers:
-#        X-RateLimit-Limit:
-#          description: Request limit per hour
-#          schema:
-#            type: integer
-#        X-RateLimit-Remaining:
-#          description: Number of requests allowed from current IP address before requests
-#            are rejected
-#          schema:
-#            type: integer
-#        X-RateLimit-Reset:
-#          description: Number of seconds before the limit resets
-#          schema:
-#            type: string
-#            format: date-time
-#      content:
-#        application/json:
-#          schema:
-#            $ref: "#/components/schemas/ConfigFieldAllCoreItems"
-#    GetConfigFieldsCoreItemResponse:
-#      description: Success
-#      headers:
-#        X-RateLimit-Limit:
-#          description: Request limit per hour
-#          schema:
-#            type: integer
-#        X-RateLimit-Remaining:
-#          description: Number of requests allowed from current IP address before requests
-#            are rejected
-#          schema:
-#            type: integer
-#        X-RateLimit-Reset:
-#          description: Number of seconds before the limit resets
-#          schema:
-#            type: string
-#            format: date-time
-#      content:
-#        application/json:
-#          schema:
-#            $ref: "#/components/schemas/ConfigFieldCoreItemContainerCombined"
+    #    GetConfigFieldsResponse:
+    #      description: Success
+    #      headers:
+    #        X-RateLimit-Limit:
+    #          description: Request limit per hour
+    #          schema:
+    #            type: integer
+    #        X-RateLimit-Remaining:
+    #          description: Number of requests allowed from current IP address before requests
+    #            are rejected
+    #          schema:
+    #            type: integer
+    #        X-RateLimit-Reset:
+    #          description: Number of seconds before the limit resets
+    #          schema:
+    #            type: string
+    #            format: date-time
+    #      content:
+    #        application/json:
+    #          schema:
+    #            $ref: "#/components/schemas/ConfigFieldAllCoreItems"
+    #    GetConfigFieldsCoreItemResponse:
+    #      description: Success
+    #      headers:
+    #        X-RateLimit-Limit:
+    #          description: Request limit per hour
+    #          schema:
+    #            type: integer
+    #        X-RateLimit-Remaining:
+    #          description: Number of requests allowed from current IP address before requests
+    #            are rejected
+    #          schema:
+    #            type: integer
+    #        X-RateLimit-Reset:
+    #          description: Number of seconds before the limit resets
+    #          schema:
+    #            type: string
+    #            format: date-time
+    #      content:
+    #        application/json:
+    #          schema:
+    #            $ref: "#/components/schemas/ConfigFieldCoreItemContainerCombined"
     GetConfigFieldsCustomFieldsResponse:
       description: Success
       headers:
@@ -9024,6 +10342,266 @@ components:
                 $ref: "#/components/schemas/FolderArray"
               errors:
                 $ref: "#/components/schemas/ErrorResponseArray"
+    GetAutomatedTestConfigsResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomatedTestConfigContainer"
+    GetAutomatedTestConfigResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomatedTestConfig"
+    GetAutomationSuitesResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationSuitesContainer"
+    RunAutomationSuiteResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuildStub"
+    SubmitAutomationBuildResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuildStubContainer"
+    GetAutomationSuiteByIDResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationSuite"
+    GetAutomationBuildsResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuildsContainer"
+    GetAutomationBuildByIDResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuild"
+    GetAutomationResultsResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationResultContainer"
+    GetAutomationTestCaseSetContainer:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationTestCaseSetContainer"
+    GetAutomationResultByIDResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationResult"
+    GetAutomationResultTestCasesResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationTestCaseSetItemResultContainer"
+    GetTestCaseAutomationResultsResponse:
+      description: Success
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Number of requests allowed from current IP address before requests
+            are rejected
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Number of seconds before the limit resets
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TestCaseAutomationResultContainer"
   requestBodies:
     createNewDocumentsDocuments:
       content:
@@ -9036,11 +10614,17 @@ components:
                 $ref: "#/components/schemas/DocumentArray"
       description: Array of requirement documents to create or update
       required: true
-    TestObjectSearchBody:
+    TestRunSearchBody:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/TestObjectSearchBody"
+            $ref: "#/components/schemas/TestRunSearchBody"
+      description: Search parameters in JSON
+    TestCaseSearchBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TestCaseSearchBody"
       description: Search parameters in JSON
     createNewTestCasesTestcases:
       content:
@@ -9075,7 +10659,7 @@ components:
                         label: Activity Professional Suite (APS)
       description: Array of issues to create or update
       required: true
-    createIssueLinksLinksdata:
+    createLinksData:
       content:
         application/json:
           schema:
@@ -9254,10 +10838,80 @@ components:
             $ref: "#/components/schemas/FolderChildrenContainer"
       description: Folders to update.
       required: true
+    updateAutomatedTestConfig:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomatedTestConfig"
+      description: Automated testing configuration to update
+      required: true
+    updateCreateAutomatedTestConfigs:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomatedTestConfigContainer"
+      description: Automated testing configuration to update or create
+      required: true
+    updateAutomatedTestConfigUserAuth:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomatedTestConfigUserAuth"
+      description: User-specific authentication to use for an automated testing configuration configuration
+      required: true
+    updateCreateAutomationSuites:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationSuitesContainer"
+      description: Automation suites to create
+      required: true
+    updateCreateAutomationTestCases:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AutomationTestCaseSetContainer'
+      description: Automation suites to create
+      required: true
+    updateAutomationSuite:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationSuite"
+      description: Automation suite to update
+      required: true
+    runAutomationSuite:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RunAutomationSuiteParams"
+      description: Run automation suite parameters
+      required: false
+    submitAutomationBuild:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuildSubmitParam"
+      description: Automation build submission
+      required: true
+    updateAutomationBuild:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AutomationBuild"
+      description: Automation build to update
+      required: true
+    associateAutomationResults:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AssociateAutomationResults"
+      description: Associate automated test results with test cases
+      required: true
   securitySchemes:
     basicSecurity:
       description: >
-        To get a list of projects from the Helix ALM Server ([GET
+        To get a list of projects from the Perforce ALM Server ([GET
         /projects](#/projects/getProjectList)) or get an access token ([GET
         /{projectID}/token](#/security/getAccessToken)), Basic Authentication
         (username and password) or API Key Authentication (ID and Secret) must
@@ -9267,7 +10921,7 @@ components:
         The following example shows an Authorization header using Basic authentication with the username Administrator and password Password123.
 
 
-        > GET /helix-alm/api/v0/4/token HTTP/1.1
+        > GET /perforce-alm/api/v0/4/token HTTP/1.1
 
         > Host: localhost:8443
 
@@ -9279,10 +10933,10 @@ components:
       scheme: basic
     accessBearerToken:
       description: >
-        All requests your application sends to the Helix ALM REST API must
+        All requests your application sends to the Perforce ALM REST API must
         include a header that contains an access token, except for getting a
         list of projects or an access token. Access tokens are generated for a
-        project based on a specified Helix ALM username and password and then
+        project based on a specified Perforce ALM username and password and then
         used for subsequent requests. To generate a token, use the [GET
         /{projectID}/token](#/security/getAccessToken) resource.
 
@@ -9290,20 +10944,20 @@ components:
         The token must be included in the request header preceded by Bearer. For example:
 
 
-        > GET /helix-alm/api/v0/4/issues HTTP/1.1
+        > GET /perforce-alm/api/v0/4/issues HTTP/1.1
 
         > Host: localhost:8443
 
         > Authorization: Bearer eyJhbGciOI6IkpXVCJ9.eyJleHAi3Q6jLTQibGljIjoicH
 
 
-        By default, tokens expire in seven days. You can set the number of hours before tokens expire in the Helix ALM Registry Utility. See the registry utility help for information. Tokens automatically expire when the Helix ALM Server is restarted. The expiresOn parameter in the response contains the date/time the token expires.
+        By default, tokens expire in seven days. You can set the number of hours before tokens expire in the Perforce ALM Registry Utility. See the registry utility help for information. Tokens automatically expire when the Perforce ALM Server is restarted. The expiresOn parameter in the response contains the date/time the token expires.
       type: apiKey
       in: header
       name: Authorization
     apiKey:
       description: >
-        To get a list of projects from the Helix ALM Server ([GET
+        To get a list of projects from the Perforce ALM Server ([GET
         /projects](#/projects/getProjectList)) or get an access token ([GET
         /{projectID}/token](#/security/getAccessToken)), Basic Authentication
         (username and password) or API Key Authentication (ID and Secret) must
@@ -9313,7 +10967,7 @@ components:
         The following example shows an Authorization header using ApiKey authentication with the API key ID 293bb9a742ec1ceb549368bf64cd2d4c5934a4e0a966ea10d3bedce0a8dd36c7 and the API key secret dd487b2fc38e4a92311d0edac47083eaf2f0379cc0e9210b4a6e3cebd5ce2f4f.
 
 
-        > GET /helix-alm/api/v0/4/issues HTTP/1.1
+        > GET /perforce-alm/api/v0/4/issues HTTP/1.1
 
         > Host: localhost:8443`
 
@@ -9326,7 +10980,7 @@ components:
       name: Authorization
   schemas:
     ProjectList:
-      description: Contains a list of projects from the Helix ALM Server
+      description: Contains a list of projects from the Perforce ALM Server
       properties:
         projects:
           description: Array of Project objects
@@ -9340,7 +10994,7 @@ components:
           format: int64
           minimum: 0
     Project:
-      description: Contains information about a Helix ALM project
+      description: Contains information about a Perforce ALM project
       properties:
         name:
           description: Project name
@@ -9407,6 +11061,28 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/ErrorResponse"
+    ErrorResponseWithSSL:
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+        - description: The request failed because of an invalid SSL certificate. Information about the server's public
+            SSL certificates is stored in the error response.
+          properties:
+            data:
+              description: Additional data relevant to the response
+              properties:
+                sslCertificates:
+                  description: Array of PEM-encoded SSL certificates the destination server is configured to use
+                  type: array
+                  items:
+                    type: string
+                    example: -----BEGIN CERTIFICATE-----\nMIICCzCCAXSgAwIBAgIEed2CzDANBgkqhkiG9w0BAQUFADBKMRAwDgYDVQQGEwdVbmtub3duMRAwDgYDVQQKEwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRIwEAYDVQQDEwlUZXN0IHNpdGUwHhcNMjIwODExMjIwNjM2WhcNMzIwODA4MjIwNjM2WjBKMRAwDgYDVQQGEwdVbmtub3duMRAwDgYDVQQKEwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRIwEAYDVQQDEwlUZXN0IHNpdGUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOIE0GtjeSF0qu6BbE6SkuOvJlkPjjbwifwmsyWvFQ9EvhyBKKMoqZrGZiUPbLyjEu6yMhYsKH/ajOGC9vIgd2F81G66OpC8EGJyFiQ5d5SmOFBtFD2pRH+MqdzIp5oc3yaKi6xkGt7EJUG2ilwWXq5d52v4VGz3JAFckXJTuQ7nAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEANhGZmV3WHQu4iZjreerbMypfgVoPfedklpcRbYsMkCYHZnGOAcINW+DdRQf2q7u2lhBE3To2MXyZPtUsskQvMRxpCyXn0OEPBfzFi/faakE9ENIvdYRMrebQNfF4g+XCx1RjAJ/3o1buSuGRTibb7zpEoA2OjZPoXPk0jC+s0Vc=\n-----END CERTIFICATE-----
+      example:
+        message: A server error occurred when handling the request.
+        statusCode: 400
+        code: Bad Request
+        errorElementPath: /automatedTestConfigsData/0
+        data:
+          sslCertificates: [ "-----BEGIN CERTIFICATE-----\nMIICCzCCAXSgAwIBAgIEed2CzDANBgkqhkiG9w0BAQUFADBKMRAwDgYDVQQGEwdVbmtub3duMRAwDgYDVQQKEwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRIwEAYDVQQDEwlUZXN0IHNpdGUwHhcNMjIwODExMjIwNjM2WhcNMzIwODA4MjIwNjM2WjBKMRAwDgYDVQQGEwdVbmtub3duMRAwDgYDVQQKEwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRIwEAYDVQQDEwlUZXN0IHNpdGUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAOIE0GtjeSF0qu6BbE6SkuOvJlkPjjbwifwmsyWvFQ9EvhyBKKMoqZrGZiUPbLyjEu6yMhYsKH/ajOGC9vIgd2F81G66OpC8EGJyFiQ5d5SmOFBtFD2pRH+MqdzIp5oc3yaKi6xkGt7EJUG2ilwWXq5d52v4VGz3JAFckXJTuQ7nAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEANhGZmV3WHQu4iZjreerbMypfgVoPfedklpcRbYsMkCYHZnGOAcINW+DdRQf2q7u2lhBE3To2MXyZPtUsskQvMRxpCyXn0OEPBfzFi/faakE9ENIvdYRMrebQNfF4g+XCx1RjAJ/3o1buSuGRTibb7zpEoA2OjZPoXPk0jC+s0Vc=\n-----END CERTIFICATE-----" ]
     FoundByContainer:
       description: Contains a list of Found by records from issues
       properties:
@@ -9414,7 +11090,7 @@ components:
           type: string
           description: href to the Found by record list
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/issues/5/foundByRecords
+          example: https://localhost:8443/perforce-alm/api/v0/issues/5/foundByRecords
         foundByRecordsData:
           description: Array of FoundByRecord objects
           type: array
@@ -9437,7 +11113,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the item
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/issues/3
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/issues/3
         ttstudioURL:
           type: string
           description: ttstudio hyperlink for the item
@@ -9474,7 +11150,7 @@ components:
       items:
         $ref: "#/components/schemas/Issue"
     Session:
-      description: Contains information about a user session on the Helix ALM Server
+      description: Contains information about a user session on the Perforce ALM Server
       properties:
         clientType:
           description: Client type used. Possible values&colon; Client, Add-In, Web (# tabs)
@@ -9504,7 +11180,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the session
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/admin/session/kI4AfZUFw9N2y870axvSvUSJgZyTLnGBK4wGv79s8EsK1RF3KQS4Mbc5K8gaOLz0vD6K7ur2VzD6ZsVzw7HOBglGJ4dsTQeKwp0Fl01lLzjhInOKTJ4WuqiGutSLqizt31veYtdjEQs9KxWYUt8BP8QFeLqLwOFuYXCBi4Yj6TsgZoeg1CdY2nW1QqoJhkdccCigjEsNKxquqOprpB8ccQFC9fi9VfDFvKIZWUAJdZCeDSIwt9aO9vOh22d6Ukgyibd0thgWPrFrruCwccGVxe6g0oH29hqW1dkaMtnfOg3OkwnPSj6lP6MNcISLWXlKncc6Z2Ujc0sYFLbeIea4jg==
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/admin/session/kI4AfZUFw9N2y870axvSvUSJgZyTLnGBK4wGv79s8EsK1RF3KQS4Mbc5K8gaOLz0vD6K7ur2VzD6ZsVzw7HOBglGJ4dsTQeKwp0Fl01lLzjhInOKTJ4WuqiGutSLqizt31veYtdjEQs9KxWYUt8BP8QFeLqLwOFuYXCBi4Yj6TsgZoeg1CdY2nW1QqoJhkdccCigjEsNKxquqOprpB8ccQFC9fi9VfDFvKIZWUAJdZCeDSIwt9aO9vOh22d6Ukgyibd0thgWPrFrruCwccGVxe6g0oH29hqW1dkaMtnfOg3OkwnPSj6lP6MNcISLWXlKncc6Z2Ujc0sYFLbeIea4jg==
     SessionArray:
       description: Array of sessions
       type: array
@@ -9518,7 +11194,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the sessions
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/admin/session
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/admin/session
     TestCaseArray:
       description: Array of TestCase objects
       type: array
@@ -9553,7 +11229,7 @@ components:
     TestRun:
       allOf:
         - $ref: "#/components/schemas/ItemBase"
-        - description: Contains information about a test run
+        - description: Contains information about a manual test run
           properties:
             fields:
               $ref: "#/components/schemas/FieldList"
@@ -9582,7 +11258,7 @@ components:
         link:
           description: REST API href to a requirement version
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/requirements/5?version=2
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/requirements/5?version=2
         createdBy:
           $ref: "#/components/schemas/User"
         createdDate:
@@ -9600,7 +11276,7 @@ components:
           type: string
           readOnly: true
           description: href to the version list
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/requirements/5/versions
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/requirements/5/versions
         versionsData:
           $ref: "#/components/schemas/Requirement_VersionsArray"
     Requirement_DocumentSnapshotLocation:
@@ -9711,7 +11387,7 @@ components:
         field, it may contain HTML or plain text. If formatted, the field
         includes HTML with a link to inline images. For example: <br><br> `<img
         alt="PastedImage_31.png"
-        src="http://localhost:10010/helix-alm/api/v1/project1/issues/42/attachments/00187571.dat"
+        src="http://localhost:10010/perforce-alm/api/v1/project1/issues/42/attachments/00187571.dat"
         width="520" height="525" />` <br><br> To save HTML with new images,
         include the new image tag with the Base64 encoded image. For example:
         <br><br> `<img alt="PastedImage_31.png"
@@ -9768,16 +11444,18 @@ components:
           type: integer
           description: Current page number
           example: 1
-        totalPages:
-          type: integer
-          description: Total number of pages
-          example: 5
         pageLimit:
           type: integer
           description: Number of items per page
           example: 300
+        totalPages:
+          type: integer
+          nullable: true
+          description: Total number of pages
+          example: 5
         totalCount:
           type: integer
+          nullable: true
           description: Total number of items
           example: 1427
     PagingWithLinks:
@@ -9806,7 +11484,7 @@ components:
         href:
           type: string
           description: Paging link href
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/issues?page=1&per_page=300
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/issues?page=1&per_page=300
         method:
           type: string
           description: Method used to GET or POST
@@ -9906,7 +11584,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the field value style
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldStyles/1
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldStyles/1
         strikethrough:
           description: Indicates if the field text is displayed with a strikethrough
           type: boolean
@@ -9926,18 +11604,18 @@ components:
           type: string
           readOnly: true
           description: REST API href to the field styles
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldStyles
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldStyles
         fieldStylesData:
           $ref: "#/components/schemas/FieldStyleArray"
     ScriptContainer:
       description: Contains the list of automated testing scripts attached to a test case
-        or test run
+        or manual test run
       properties:
         self:
           type: string
           readOnly: true
           description: REST API href to the script list
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/scripts
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/scripts
         scriptsData:
           $ref: "#/components/schemas/FileReferenceArray"
     LinksContainer:
@@ -9947,7 +11625,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the list of links
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/issues/5/links
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/issues/5/links
         linksData:
           $ref: "#/components/schemas/LinkArray"
     LinkDefinitionStub:
@@ -9962,14 +11640,14 @@ components:
           description: Link definition name
           example: Related Items
     LinkedItem:
-      description: Contains a linked item that references an existing Helix ALM item
+      description: Contains a linked item that references an existing Perforce ALM item
       properties:
         itemID:
           allOf:
             - $ref: "#/components/schemas/ItemID"
-            - description: ID for the linked Helix ALM item
+            - description: ID for the linked Perforce ALM item
         itemType:
-          description: Helix ALM item type
+          description: Perforce ALM item type
           type: string
           enum:
             - issues
@@ -9977,11 +11655,12 @@ components:
             - testRuns
             - requirements
             - documents
+            - automatedTestResults
         isSuspect:
           description: Indicates if the linked item is flagged as a suspect
           type: boolean
         link:
-          description: REST API href to Helix ALM item
+          description: REST API href to Perforce ALM item
           type: string
     LinkedItemArray:
       type: array
@@ -10017,6 +11696,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Link"
+
     AttachmentContainer:
       description: Contains the list of files attached to an item
       properties:
@@ -10024,7 +11704,7 @@ components:
           type: string
           readOnly: true
           description: REST API href to the attachment list
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/issues/5/attachments
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/issues/5/attachments
         attachmentsData:
           $ref: "#/components/schemas/AttachmentArray"
     AttachmentBase:
@@ -10033,7 +11713,7 @@ components:
         content:
           description: Link to the REST API resource to download the attachment
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/files/eyJkYXRhYmFzZUlEIjoxNDgsImlkIjpbeyIxOTUzNzIzNDkxIjoxfSx7IjE2MzUwMTc1NzYiOjk0fV19
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/files/eyJkYXRhYmFzZUlEIjoxNDgsImlkIjpbeyIxOTUzNzIzNDkxIjoxfSx7IjE2MzUwMTc1NzYiOjk0fV19
         encodedFileID:
           description: Unique identifier to use to download the attachment
           type: string
@@ -10047,7 +11727,7 @@ components:
               type: string
               readOnly: true
               description: REST API href to the attachment
-              example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/attachments/94
+              example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/attachments/94
             id:
               allOf:
                 - $ref: "#/components/schemas/ItemID"
@@ -10178,7 +11858,7 @@ components:
       example:
         id: 73
         name: Ready
-        self: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/events/73
+        self: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/events/73
     EventStubArray:
       description: Array of EventStub objects
       type: array
@@ -10197,7 +11877,7 @@ components:
             attachments:
               attachmentsData:
                 []
-              self: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/events/73/attachments
+              self: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/events/73/attachments
             fields:
               - id: 2228229
                 label: Resulting State
@@ -10228,7 +11908,7 @@ components:
                 type: decimal
             id: 73
             name: Ready
-            self: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/events/73
+            self: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/events/73
     EventArray:
       description: Array of Event objects
       type: array
@@ -10422,6 +12102,9 @@ components:
               type: string
               maxLength: 255
               example: This i
+            excludeFromDocumentTestCoverage:
+              description: Indicates if the requirement type should be excluded from document test coverage.
+              type: boolean
             prefix:
               description: Tag prefix that is prepended to the requirement number
               type: string
@@ -10477,7 +12160,6 @@ components:
       description: Field configuration type that determines what information can be configured for a field
       type: string
       enum:
-        - unknown
         - singleLineString
         - multiLineString
         - boolean
@@ -10492,6 +12174,7 @@ components:
         - testRunSetMenu
         - subTypeMenu
         - calculated
+        - unknown
 
     FieldSingleLineStringFormats:
       description: Valid formats for singleLineString fields
@@ -10521,6 +12204,7 @@ components:
         - year
 
     ConfigFieldDateDefaultValue:
+      type: object
       nullable: true
       properties:
         type:
@@ -10619,9 +12303,9 @@ components:
         editable:
           description: Indicates if the field value can be edited
           type: boolean
-#        active:
-#          description: Applies only to event custom fields. Indicates if the field is active.
-#          type: boolean
+        #        active:
+        #          description: Applies only to event custom fields. Indicates if the field is active.
+        #          type: boolean
         longName:
           description: Alternate label displayed in dropdown fields to help users distinguish between fields with the same name in different workflow events
           type: string
@@ -10673,7 +12357,6 @@ components:
     ConfigFieldTypeStateAttribute:
       type: object
       nullable: true
-        # No properties
 
     ConfigFieldStateAttribute:
       allOf:
@@ -10760,6 +12443,12 @@ components:
           required:
             - calculated
 
+    ConfigFieldTypeWithMultiSelectMenu:
+      properties:
+        multiSelect:
+          description: Indicates if multiple selection is enabled for the field
+          type: boolean
+
     ConfigFieldTypeMenuBase:
       properties:
         multiSelect:
@@ -10785,12 +12474,12 @@ components:
             name:
               type: string
               description: Menu name. When creating a new field that uses the menu and specify a menu name that does not exist, a new empty menu is created using the specified name.
-#            link:
-#              description: REST API href to the specific menu
-#              type: string
-#            length:
-#              description: The number of characters of this menu to display
-#              type: integer
+    #            link:
+    #              description: REST API href to the specific menu
+    #              type: string
+    #            length:
+    #              description: Number of characters for the menu to display
+    #              type: integer
 
     ConfigFieldMenu:
       allOf:
@@ -10806,15 +12495,15 @@ components:
         multiSelect:
           description: Indicates if multi-select is enabled for the field
           type: boolean
-#        userStatus:
-#          type: array
-#          items:
-#            type: string
-#            enum:
-#              - active
-#              - inactive
-#          minItems: 1
-#          uniqueItems: true
+        #        userStatus:
+        #          type: array
+        #          items:
+        #            type: string
+        #            enum:
+        #              - active
+        #              - inactive
+        #          minItems: 1
+        #          uniqueItems: true
         userScope:
           type: array
           items:
@@ -10860,18 +12549,12 @@ components:
           required:
             - stateMenu
 
-    ConfigFieldTypeSecurityGroupMenu:
-      properties:
-        multiSelect:
-          description: Indicates if multiple selection is enabled for the field
-          type: boolean
-
     ConfigFieldSecurityGroupMenu:
       allOf:
         - $ref: "#/components/schemas/ConfigFieldBase"
         - properties:
             securityGroupMenu:
-              $ref: "#/components/schemas/ConfigFieldTypeSecurityGroupMenu"
+              $ref: "#/components/schemas/ConfigFieldTypeWithMultiSelectMenu"
           required:
             - securityGroupMenu
 
@@ -10907,7 +12590,7 @@ components:
         - $ref: "#/components/schemas/ConfigFieldBase"
         - properties:
             subTypeMenu:
-              $ref: "#/components/schemas/ConfigFieldTypeMenuBase"
+              $ref: "#/components/schemas/ConfigFieldTypeWithMultiSelectMenu"
           required:
             - subTypeMenu
 
@@ -10970,151 +12653,151 @@ components:
         systemFieldsData:
           $ref: "#/components/schemas/ConfigFieldArray"
 
-#    ConfigFieldEvent:
-#      properties:
-#        customFields:
-#          $ref: '#/components/schemas/ConfigFieldCustomFieldsContainer'
-#        systemFields:
-#          $ref: '#/components/schemas/ConfigFieldSystemFieldsContainer'
-#        workflowID:
-#          $ref: '#/components/schemas/ValidItemID'
-#        workflowName:
-#          type: string
-#
-#    ConfigFieldEventArray:
-#      type: array
-#      items:
-#        $ref: '#/components/schemas/ConfigFieldEvent'
+    #    ConfigFieldEvent:
+    #      properties:
+    #        customFields:
+    #          $ref: '#/components/schemas/ConfigFieldCustomFieldsContainer'
+    #        systemFields:
+    #          $ref: '#/components/schemas/ConfigFieldSystemFieldsContainer'
+    #        workflowID:
+    #          $ref: '#/components/schemas/ValidItemID'
+    #        workflowName:
+    #          type: string
+    #
+    #    ConfigFieldEventArray:
+    #      type: array
+    #      items:
+    #        $ref: '#/components/schemas/ConfigFieldEvent'
 
-#    ConfigFieldDeletedCustomFieldsContainer:
-#      description: Contains basic information about system fields
-#      properties:
-#        self:
-#          description: REST API href to the system fields
-#          readOnly: true
-#          type: string
-#        deletedCustomFieldsData:
-#          allOf:
-#            - $ref: "#/components/schemas/ConfigFieldArray"
-#            - readOnly: true
+    #    ConfigFieldDeletedCustomFieldsContainer:
+    #      description: Contains basic information about system fields
+    #      properties:
+    #        self:
+    #          description: REST API href to the system fields
+    #          readOnly: true
+    #          type: string
+    #        deletedCustomFieldsData:
+    #          allOf:
+    #            - $ref: "#/components/schemas/ConfigFieldArray"
+    #            - readOnly: true
 
-#    ConfigFieldEventFieldsFieldsContainer:
-#      description: Contains basic information about system fields
-#      properties:
-#        self:
-#          description: REST API href to the system fields
-#          readOnly: true
-#          type: string
-#        eventFieldsData:
-#          $ref: "#/components/schemas/ConfigFieldEventArray"
+    #    ConfigFieldEventFieldsFieldsContainer:
+    #      description: Contains basic information about system fields
+    #      properties:
+    #        self:
+    #          description: REST API href to the system fields
+    #          readOnly: true
+    #          type: string
+    #        eventFieldsData:
+    #          $ref: "#/components/schemas/ConfigFieldEventArray"
 
-#    ConfigFieldExternalIntegration:
-#      properties:
-#        externalIntegrationID:
-#          $ref: "#/components/schemas/ValidItemID"
-#        systemFields:
-#          $ref: "#/components/schemas/ConfigFieldSystemFieldsContainer"
+    #    ConfigFieldExternalIntegration:
+    #      properties:
+    #        externalIntegrationID:
+    #          $ref: "#/components/schemas/ValidItemID"
+    #        systemFields:
+    #          $ref: "#/components/schemas/ConfigFieldSystemFieldsContainer"
 
-#    ConfigFieldExternalIntegrationArray:
-#      type: array
-#      items:
-#        $ref: '#/components/schemas/ConfigFieldExternalIntegration'
+    #    ConfigFieldExternalIntegrationArray:
+    #      type: array
+    #      items:
+    #        $ref: '#/components/schemas/ConfigFieldExternalIntegration'
 
-#    ConfigFieldExternalIntegrationFieldsContainer:
-#      description: Contains basic information about system fields
-#      properties:
-#        self:
-#          description: REST API href to the system fields
-#          readOnly: true
-#          type: string
-#        externalIntegrationFieldsData:
-#          $ref: '#/components/schemas/ConfigFieldExternalIntegrationArray'
+    #    ConfigFieldExternalIntegrationFieldsContainer:
+    #      description: Contains basic information about system fields
+    #      properties:
+    #        self:
+    #          description: REST API href to the system fields
+    #          readOnly: true
+    #          type: string
+    #        externalIntegrationFieldsData:
+    #          $ref: '#/components/schemas/ConfigFieldExternalIntegrationArray'
 
-#    ConfigFieldItemGrouping:
-#      properties:
-#        customFields:
-#          $ref: "#/components/schemas/ConfigFieldCustomFieldsContainer"
-#        deletedCustomFields:
-#          $ref: "#/components/schemas/ConfigFieldDeletedCustomFieldsContainer"
-#        eventFields:
-#          $ref: "#/components/schemas/ConfigFieldEventFieldsFieldsContainer"
-#        externalIntegrationFields:
-#          $ref: "#/components/schemas/ConfigFieldExternalIntegrationFieldsContainer"
-#        systemFields:
-#          $ref: "#/components/schemas/ConfigFieldSystemFieldsContainer"
+    #    ConfigFieldItemGrouping:
+    #      properties:
+    #        customFields:
+    #          $ref: "#/components/schemas/ConfigFieldCustomFieldsContainer"
+    #        deletedCustomFields:
+    #          $ref: "#/components/schemas/ConfigFieldDeletedCustomFieldsContainer"
+    #        eventFields:
+    #          $ref: "#/components/schemas/ConfigFieldEventFieldsFieldsContainer"
+    #        externalIntegrationFields:
+    #          $ref: "#/components/schemas/ConfigFieldExternalIntegrationFieldsContainer"
+    #        systemFields:
+    #          $ref: "#/components/schemas/ConfigFieldSystemFieldsContainer"
 
-#    ConfigFieldCoreItemContainerBase:
-#      properties:
-#        type:
-#          type: string
-#          enum:
-#            - documentFieldsData
-#            - issueFieldsData
-#            - requirementFieldsData
-#            - testCaseFieldsData
-#            - testRunFieldsData
-#        self:
-#          description: REST API href to field configuration information for an item
-#          type: string
-#          readOnly: true
-#      discriminator:
-#        propertyName: type
-#
-#    documentFieldsData:
-#      allOf:
-#        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
-#        - properties:
-#            documentFieldsData:
-#              $ref: "#/components/schemas/ConfigFieldItemGrouping"
-#
-#    issueFieldsData:
-#      allOf:
-#        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
-#        - properties:
-#            issueFieldsData:
-#              $ref: "#/components/schemas/ConfigFieldItemGrouping"
-#
-#    requirementFieldsData:
-#      allOf:
-#        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
-#        - properties:
-#            requirementFieldsData:
-#              $ref: "#/components/schemas/ConfigFieldItemGrouping"
-#
-#    testCaseFieldsData:
-#      allOf:
-#        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
-#        - properties:
-#            testCaseFieldsData:
-#              $ref: "#/components/schemas/ConfigFieldItemGrouping"
-#
-#    testRunFieldsData:
-#      allOf:
-#        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
-#        - properties:
-#            testRunFieldsData:
-#              $ref: "#/components/schemas/ConfigFieldItemGrouping"
-#
-#    ConfigFieldCoreItemContainerCombined:
-#      oneOf:
-#        - $ref: "#/components/schemas/documentFieldsData"
-#        - $ref: "#/components/schemas/issueFieldsData"
-#        - $ref: "#/components/schemas/requirementFieldsData"
-#        - $ref: "#/components/schemas/testCaseFieldsData"
-#        - $ref: "#/components/schemas/testRunFieldsData"
-#
-#    ConfigFieldAllCoreItems:
-#      properties:
-#        issueFields:
-#          $ref: "#/components/schemas/issueFieldsData"
-#        requirementFields:
-#          $ref: "#/components/schemas/requirementFieldsData"
-#        documentFields:
-#          $ref: "#/components/schemas/documentFieldsData"
-#        testCaseFields:
-#          $ref: "#/components/schemas/testCaseFieldsData"
-#        testRunFields:
-#          $ref: "#/components/schemas/testRunFieldsData"
+    #    ConfigFieldCoreItemContainerBase:
+    #      properties:
+    #        type:
+    #          type: string
+    #          enum:
+    #            - documentFieldsData
+    #            - issueFieldsData
+    #            - requirementFieldsData
+    #            - testCaseFieldsData
+    #            - testRunFieldsData
+    #        self:
+    #          description: REST API href to field configuration information for an item
+    #          type: string
+    #          readOnly: true
+    #      discriminator:
+    #        propertyName: type
+    #
+    #    documentFieldsData:
+    #      allOf:
+    #        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
+    #        - properties:
+    #            documentFieldsData:
+    #              $ref: "#/components/schemas/ConfigFieldItemGrouping"
+    #
+    #    issueFieldsData:
+    #      allOf:
+    #        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
+    #        - properties:
+    #            issueFieldsData:
+    #              $ref: "#/components/schemas/ConfigFieldItemGrouping"
+    #
+    #    requirementFieldsData:
+    #      allOf:
+    #        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
+    #        - properties:
+    #            requirementFieldsData:
+    #              $ref: "#/components/schemas/ConfigFieldItemGrouping"
+    #
+    #    testCaseFieldsData:
+    #      allOf:
+    #        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
+    #        - properties:
+    #            testCaseFieldsData:
+    #              $ref: "#/components/schemas/ConfigFieldItemGrouping"
+    #
+    #    testRunFieldsData:
+    #      allOf:
+    #        - $ref: "#/components/schemas/ConfigFieldCoreItemContainerBase"
+    #        - properties:
+    #            testRunFieldsData:
+    #              $ref: "#/components/schemas/ConfigFieldItemGrouping"
+    #
+    #    ConfigFieldCoreItemContainerCombined:
+    #      oneOf:
+    #        - $ref: "#/components/schemas/documentFieldsData"
+    #        - $ref: "#/components/schemas/issueFieldsData"
+    #        - $ref: "#/components/schemas/requirementFieldsData"
+    #        - $ref: "#/components/schemas/testCaseFieldsData"
+    #        - $ref: "#/components/schemas/testRunFieldsData"
+    #
+    #    ConfigFieldAllCoreItems:
+    #      properties:
+    #        issueFields:
+    #          $ref: "#/components/schemas/issueFieldsData"
+    #        requirementFields:
+    #          $ref: "#/components/schemas/requirementFieldsData"
+    #        documentFields:
+    #          $ref: "#/components/schemas/documentFieldsData"
+    #        testCaseFields:
+    #          $ref: "#/components/schemas/testCaseFieldsData"
+    #        testRunFields:
+    #          $ref: "#/components/schemas/testRunFieldsData"
 
     ConfigFieldRelationshipRelationParent:
       description: Basic information about a menu item
@@ -11126,7 +12809,7 @@ components:
         link:
           description: REST API link to the menu item
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/12/items/6
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/12/items/6
     ConfigFieldRelationshipRelation:
       description: Contains information showing the relationship between a parent menu item and hidden child menu
         items
@@ -11140,7 +12823,7 @@ components:
         self:
           description: REST API href to the parent menu item to child menu item relation
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations/3
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations/3
           readOnly: true
         hiddenChildItems:
           description: Child menu item record IDs that are not selected to be associated with the parent menu item
@@ -11158,7 +12841,7 @@ components:
           description: REST API href to the parent menu item to child menu item relation
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations
         relationsData:
           $ref: "#/components/schemas/ConfigFieldRelationshipRelationsArray"
 
@@ -11169,7 +12852,7 @@ components:
           description: REST API href to the parent menu item to child menu item relation
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldRelationships/12/relations
 
     ConfigFieldRelationshipFieldStub:
       description: Basic information about a field in a field relationship
@@ -11189,12 +12872,12 @@ components:
         #        fieldLink:
         #          description: REST API href to this field
         #          type: string
-        #          example: https://localhost:8443/helix-alm/api/v0/NotYetImplemented
+        #          example: https://localhost:8443/perforce-alm/api/v0/NotYetImplemented
         menuLink:
           description: REST API href to the menu associated with the field. If the field is not a menu type field, menuID is null.
           type: string
           nullable: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/12
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/12
     ConfigFieldRelationshipBase:
       description: Defines how a parent field relates to a child field
       properties:
@@ -11210,7 +12893,7 @@ components:
           description: REST API href to the field relationship
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldRelationships/12
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldRelationships/12
 
     ConfigFieldRelationshipExpandable:
       allOf:
@@ -11238,7 +12921,7 @@ components:
           description: REST API href to the list of field relationships
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldRelationships
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldRelationships
         fieldRelationshipsData:
           $ref: "#/components/schemas/ConfigFieldRelationshipsArray"
 
@@ -11257,7 +12940,7 @@ components:
         link:
           description: REST API link to the field value style
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/fieldStyles/12
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/fieldStyles/12
 
     ConfigMenuField:
       description: Contains a field that references a menu
@@ -11294,7 +12977,7 @@ components:
           description: REST API href to fields that reference a menu
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14/fields
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14/fields
 
     ConfigMenuFieldContainer:
       description: Contains a list of fields that use a menu
@@ -11303,7 +12986,7 @@ components:
           description: REST API href to the fields that reference a menu
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14/fields
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14/fields
         fieldsData:
           $ref: "#/components/schemas/ConfigMenuFieldArray"
     ConfigMenuItem:
@@ -11317,7 +13000,7 @@ components:
               description: REST API href to the menu item
               type: string
               readOnly: true
-              example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14/items/4
+              example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14/items/4
     ConfigMenuItemArray:
       description: Array of ConfigMenuItem objects
       type: array
@@ -11330,7 +13013,7 @@ components:
           description: REST API href to the menu item list
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14/items
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14/items
     ConfigMenuItemContainer:
       description: Contains a list of menu items
       properties:
@@ -11338,7 +13021,7 @@ components:
           description: REST API href to the menu item list
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14/items
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14/items
         itemsData:
           $ref: "#/components/schemas/ConfigMenuItemArray"
     ConfigMenuBase:
@@ -11356,7 +13039,7 @@ components:
           description: REST API href to this menu
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/config/menus/14
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/config/menus/14
     ConfigMenuStub:
       allOf:
         - $ref: "#/components/schemas/ConfigMenuBase"
@@ -11408,7 +13091,17 @@ components:
         - events
         - links
         - folders
-    TestObjectExpand:
+    TestRunExpand:
+      type: string
+      enum:
+        - attachments
+        - scripts
+        - events
+        - variants
+        - steps
+        - links
+        - folders
+    TestCaseExpand:
       type: string
       enum:
         - attachments
@@ -11436,7 +13129,7 @@ components:
         - links
         - folders
     Variant:
-      description: Contains information about a test variant on a test case or test run
+      description: Contains information about a test variant on a test case or manual test run
       properties:
         label:
           description: Variant name
@@ -11484,38 +13177,38 @@ components:
                 label: Web
             type: menuItemArray
     TestRunsVariantContainer:
-      description: Contains the list of test variants for a test run
+      description: Contains the list of test variants for a manual test run
       properties:
         self:
           description: REST API href to the variant list
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/1/variants
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/1/variants
         variantsData:
           $ref: "#/components/schemas/TestRunsVariant"
     TestRunsVariant:
       description: >
-        Contains test variants for a test run. Includes variants from the test
+        Contains test variants for a manual test run. Includes variants from the test
         case that the test run was generated from and variants added to the test
         run after it was generated.
       properties:
         generated:
           allOf:
             - $ref: "#/components/schemas/VariantArray"
-            - description: Read-only array of Variant objects for test variants from the
-                test case that the test run was generated from
+            - description: Read-only array of variant objects for test variants from the
+                test case that the manual test run was generated from
         additional:
           allOf:
             - $ref: "#/components/schemas/VariantArray"
-            - description: Array of Variant objects for test variants added to the test run
+            - description: Array of variant objects for test variants added to the manual test run
                 after it was generated
     GenerateTestRunParams:
-      description: Contains information used when test runs are generated from test cases
+      description: Contains information used when manual test runs are generated from test cases
       required:
         - testCaseIDs
       properties:
         testCaseIDs:
-          description: Test cases to generate test runs from
+          description: Test cases to generate manual test runs from
           type: array
           minItems: 1
           items:
@@ -11525,16 +13218,16 @@ components:
         folder:
           allOf:
             - $ref: "#/components/schemas/ItemFolderIdentifier"
-            - description: Information about folders to add test runs to after they are
+            - description: Information about folders to add manual test runs to after they are
                 generated
         testRunSet:
           allOf:
             - $ref: "#/components/schemas/MenuItem"
-            - description: Test run set to add the generated test runs to
+            - description: Test run set to add the generated manual test runs to
         eventsData:
           allOf:
             - $ref: "#/components/schemas/EventArray"
-            - description: Events to apply to the newly generated test runs
+            - description: Events to apply to the newly generated manual test runs
     TestCaseStepsContainer:
       description: Contains all step information for a test case
       properties:
@@ -11542,17 +13235,17 @@ components:
           description: REST API href to the test case steps
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/40/steps
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/40/steps
         stepsData:
           $ref: "#/components/schemas/TestCaseStepsData"
     TestRunStepsContainer:
-      description: Contains all step information for a test run
+      description: Contains all step information for a manual test run
       properties:
         self:
-          description: REST API href to the test run steps
+          description: REST API href to the manual test run steps
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testRuns/1/steps
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testRuns/1/steps
         stepsData:
           $ref: "#/components/schemas/TestRunStepsData"
     TestCaseStepsData:
@@ -11561,8 +13254,8 @@ components:
       properties:
         modifiedToCorrectSyntax:
           description: >
-            Indicates if Helix ALM had to make changes to the test case steps to
-            return them in the current structure. The value is true if Helix ALM
+            Indicates if Perforce ALM had to make changes to the test case steps to
+            return them in the current structure. The value is true if Perforce ALM
             modified the structure to correct the syntax before returning the
             steps. Optional.
           type: boolean
@@ -11737,7 +13430,7 @@ components:
           traceability easier.
         type: stepNote
     ExpectedResult:
-      description: Contains the expected result information for a test run step
+      description: Contains the expected result information for a manual test run step
       properties:
         text:
           description: Expected result for the step
@@ -11755,7 +13448,7 @@ components:
         - $ref: "#/components/schemas/ExpectedResult"
         - properties:
             completed:
-              description: Indicates if the test run step is complete. Only used in test
+              description: Indicates if the manual test run step is complete. Only used in test
                 runs using the basic structure.
               type: boolean
     SharedStep:
@@ -11768,22 +13461,22 @@ components:
         link:
           description: REST API link to the source test case
           type: string
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/testCases/13
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/13
     TestRunStepsData:
-      description: Contains information about test run steps, including the type of step
+      description: Contains information about manual test run steps, including the type of step
         structure it uses
       properties:
         modifiedToCorrectSyntax:
           description: >
-            Indicates if Helix ALM had to make changes to the test case steps to
-            return them in the current structure. The value is true if Helix ALM
+            Indicates if Perforce ALM had to make changes to the test case steps to
+            return them in the current structure. The value is true if Perforce ALM
             modified the structure to correct the syntax before returning the
             steps. Optional.
           type: boolean
           default: false
         type:
-          description: Test run type. Value specifies the property name that contains the
-            test run value. See [Test run step
+          description: Manual est run type. Value specifies the property name that contains the
+            test run value. See [Manual test run step
             structure](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure).
           type: string
           enum:
@@ -11799,8 +13492,8 @@ components:
         $ref: "#/components/schemas/TestRunBasicStepData"
     TestRunBasicStepData:
       description: >
-        Contains information for a test run step that uses the basic structure.
-        See [Test run step
+        Contains information for a manual test run step that uses the basic structure.
+        See [Manual test run step
         structure](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure).
       properties:
         type:
@@ -11846,8 +13539,8 @@ components:
         $ref: "#/components/schemas/TestRunDetailedStepData"
     TestRunDetailedStepData:
       description: >
-        Contains information for a test run step that uses the detailed
-        structure. See [Test run step
+        Contains information for a manual test run step that uses the detailed
+        structure. See [Manual test run step
         structure](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure).
       properties:
         type:
@@ -11881,7 +13574,7 @@ components:
         type: step
     TestRunStep:
       description: >
-        Contains information about a test run step. See [Test run step
+        Contains information about a manual test run step. See [Manual test run step
         structure](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure).
       properties:
         number:
@@ -11901,23 +13594,23 @@ components:
           $ref: "#/components/schemas/ExpectedResult"
     TestRunBasicStep:
       description: >
-        Contains information about test run steps that use the basic structure.
-        See [Test run step
+        Contains information about manual test run steps that use the basic structure.
+        See [Manual test run step
         structure](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure).
       properties:
         number:
-          description: Test run step number
+          description: Manual test run step number
           type: integer
           format: int64
           example: 1
         text:
-          description: Test run step text
+          description: Manual test run step text
           type: string
           example: Click Export and enter a filename.
         stepRows:
           $ref: "#/components/schemas/TestRunBasicStepRowArray"
     TestRunStepResult:
-      description: Contains the result for a specific test run step
+      description: Contains the result for a specific manual test run step
       properties:
         dateTime:
           description: Read-only date/time that the step result was entered
@@ -11942,7 +13635,7 @@ components:
       items:
         $ref: "#/components/schemas/TestRunBasicStepRow"
     TestRunStepRow:
-      description: Contains information for a row within a step in a test run
+      description: Contains information for a row within a step in a manual test run
       properties:
         type:
           description: Step row type. Value specifies the property name that contains the
@@ -11970,8 +13663,8 @@ components:
           example: Be sure to complete steps quickly.
     TestRunBasicStepRow:
       description: >
-        Contains information for a row within a test run step that uses a basic
-        structure. See [Test run step
+        Contains information for a row within a manual test run step that uses a basic
+        structure. See [Manual test run step
         structure.](https://help.perforce.com/alm/help.php?product=helixalm&version={{HALM_VERSION}}&type=restapi&topic=TestRunStepStructure)
       properties:
         type:
@@ -12003,7 +13696,7 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/IssuesExpand"
-    TestObjectSearchBody:
+    TestRunSearchBody:
       allOf:
         - $ref: "#/components/schemas/ListSearchBody"
         - properties:
@@ -12012,7 +13705,17 @@ components:
                 Properties to expand to show the sub-objects within them
               type: array
               items:
-                $ref: "#/components/schemas/TestObjectExpand"
+                $ref: "#/components/schemas/TestRunExpand"
+    TestCaseSearchBody:
+      allOf:
+        - $ref: "#/components/schemas/ListSearchBody"
+        - properties:
+            expand:
+              description: |
+                Properties to expand to show the sub-objects within them
+              type: array
+              items:
+                $ref: "#/components/schemas/TestCaseExpand"
     RequirementSearchBody:
       allOf:
         - $ref: "#/components/schemas/ListSearchBody"
@@ -12163,21 +13866,27 @@ components:
         - testCaseFields
         - testRunFields
         - testVariantFields
+    StringMatchType:
+      type: string
+      enum:
+        - exact
+        - wildcard
+      example: exact
     VersionInfo:
-      description: Version information for the Helix ALM Server, REST API Server, and the Helix ALM Communication Library
-                   that facilitates communication between them.
+      description: Version information for the Perforce ALM Server, REST API Server, and the Perforce ALM Communication Library
+        that facilitates communication between them.
       properties:
         RESTAPIServer:
           description: Version of the REST API Server. Format is Major.Minor.Maintenance.Build.
           type: string
           example: 2019.2.0.10
         HALMCommsLibrary:
-          description: Helix ALM Communication Library version. Format is Major.Minor.Maintenance.Build.
+          description: Perforce ALM Communication Library version. Format is Major.Minor.Maintenance.Build.
             If the version cannot be determined, the value is set to '&lt;unknown&gt;'.
           type: string
           example: 2019.2.0.10
         HALMServer:
-          description: Helix ALM Server version. Format is Major.Minor.Maintenance.Build.
+          description: Perforce ALM Server version. Format is Major.Minor.Maintenance.Build.
             If the version cannot be determined, the value is set to '&lt;unknown&gt;'.
           type: string
           example: 2019.2.0.10
@@ -12195,6 +13904,8 @@ components:
         - testVariants
         - requirements
         - documents
+        - automatedTesting
+        - automatedTestResultStatus
         - allTypes
     FieldLabel:
       description: Information about a field label
@@ -12208,7 +13919,7 @@ components:
           allOf:
             - $ref: "#/components/schemas/FieldLabelTypes"
             - description: Item type associated with the field label. 'allTypes' is equivalent
-                to the 'Miscellaneous' value in dropdown fields in the Helix ALM GUI clients.
+                to the 'Miscellaneous' value in dropdown fields in the Perforce ALM GUI clients.
               readOnly: true
               example: testRuns
         description:
@@ -12236,7 +13947,7 @@ components:
           type: string
           description: REST API href to the field label
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/configs/fieldLabels/26165
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/configs/fieldLabels/26165
     FieldLabelArray:
       type: array
       items:
@@ -12248,7 +13959,7 @@ components:
           type: string
           description: REST API href to the field label container
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/configs/fieldLabels
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/configs/fieldLabels
         fieldLabelsData:
           $ref: "#/components/schemas/FieldLabelArray"
     TaskboardStub:
@@ -12318,12 +14029,13 @@ components:
           allOf:
             - $ref: "#/components/schemas/TaskboardStub"
             - description: Default task board for the folder type
+              type: object
               nullable: true
         self:
           type: string
           description: REST API href to the folder type
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/configs/folderTypes/5
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/configs/folderTypes/5
     FolderTypeArray:
       type: array
       items:
@@ -12335,7 +14047,7 @@ components:
           type: string
           description: REST API href to the folder types container
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/configs/folderTypes
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/configs/folderTypes
         folderTypesData:
           $ref: "#/components/schemas/FolderTypeArray"
     FolderName:
@@ -12365,7 +14077,7 @@ components:
           description: REST API href to a folder
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/folders/13
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/folders/13
     CoreItemFolderArray:
       description: Returns an array of folder information stubs
       type: array
@@ -12378,7 +14090,7 @@ components:
           type: string
           description: REST API href to the folder container
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/issues/5/folders
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/issues/5/folders
         foldersData:
           $ref: "#/components/schemas/CoreItemFolderArray"
     Folder:
@@ -12400,7 +14112,7 @@ components:
           description: REST API href to a folder
           type: string
           readOnly: true
-          example: https://localhost:8443/helix-alm/api/v0/Traditional%20Template/folders/13
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/folders/13
         childFolders:
           $ref: "#/components/schemas/FolderChildrenContainer"
     FolderArray:
@@ -12414,7 +14126,7 @@ components:
           type: string
           description: REST API href to the folder container
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/folders/12/children
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/folders/12/children
         childFoldersData:
           $ref: "#/components/schemas/FolderArray"
     FolderContainer:
@@ -12424,9 +14136,806 @@ components:
           type: string
           description: REST API href to the folder container
           readOnly: true
-          example: https://localhost:8443/helix-alm-api/v0/Traditional_Template/folders
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/folders
         foldersData:
           $ref: "#/components/schemas/FolderArray"
 
+    AutomatedTestConfigTypes:
+      description: Types of automated testing configurations supported by Perforce ALM
+      type: string
+      enum:
+        - jenkins
+
+    AutomatedTestConfigRoot:
+      description: Basic information about an automated testing configuration
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/ValidItemID"
+            - description: Automated testing configuration ID
+        name:
+          description: Automated testing configuration name
+          type: string
+          example: WYSIWYG Corp's Jenkins Server
+
+    AutomatedTestConfigStub:
+      allOf:
+        - $ref: '#/components/schemas/AutomatedTestConfigRoot'
+        - properties:
+            link:
+              type: string
+              description: REST API href to the automated testing configuration
+              readOnly: true
+              example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automatedTestConfigs/1
+
+    AutomatedTestConfigBase:
+      allOf:
+        - $ref: '#/components/schemas/AutomatedTestConfigRoot'
+        - properties:
+            self:
+              type: string
+              description: REST API href to the automated testing configuration
+              readOnly: true
+              example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automatedTestConfigs/1
+            type:
+              $ref: "#/components/schemas/AutomatedTestConfigTypes"
+
+    AutomatedTestConfigTypeJenkins:
+      description: Automated testing configuration information specific to Jenkins
+      properties:
+        url:
+          description: Jenkins URL
+          type: string
+          example: https://jenkins.company.com:8080
+        sslCertificates:
+          description: Array of SSL certificates to accept if the host is using self-signed certificates
+          type: array
+          items:
+            type: string
+            example: "-----BEGIN CERTIFICATE-----\nMIICCzCCAXSgAwIBAgIEcirysDA...D7tUBzbbJJup5xiX9CY=\n-----END CERTIFICATE-----"
+        description:
+          description: Automated testing configuration description
+          type: string
+          example: Automated testing Jenkins instance
+    AutomatedTestConfigJenkins:
+      allOf:
+        - $ref: "#/components/schemas/AutomatedTestConfigBase"
+        - properties:
+            jenkins:
+              $ref: "#/components/schemas/AutomatedTestConfigTypeJenkins"
+
+    AutomatedTestConfig:
+      anyOf:
+        - $ref: "#/components/schemas/AutomatedTestConfigJenkins"
+      discriminator:
+        propertyName: type
+        mapping:
+          jenkins: '#/components/schemas/AutomatedTestConfigJenkins'
+
+    AutomatedTestConfigArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/AutomatedTestConfig'
+
+    AutomatedTestConfigContainer:
+      description: Contains information about automated testing configurations
+      properties:
+        self:
+          description: REST API href to the automated testing configuration container
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automatedTestConfigs
+        automatedTestConfigsData:
+          $ref: '#/components/schemas/AutomatedTestConfigArray'
+
+    AutomatedTestConfigUserAuthBase:
+      description: Common properties for the automated testing configuration user authentication data
+      properties:
+        type:
+          $ref: "#/components/schemas/AutomatedTestConfigTypes"
+
+    AutomatedTestConfigUserAuthJenkinsType:
+      description: Jenkins-specific user authentication data for an automated testing configuration
+      properties:
+        username:
+          description: Jenkins username
+          type: string
+          example: administrator
+        securityToken:
+          description: Password or API token used for authentication with Jenkins
+          type: string
+          example: 11892af3c430d83564d2b2a3d2571f0179
+    AutomatedTestConfigUserAuthJenkins:
+      allOf:
+        - $ref: "#/components/schemas/AutomatedTestConfigUserAuthBase"
+        - properties:
+            jenkins:
+              $ref: "#/components/schemas/AutomatedTestConfigUserAuthJenkinsType"
+
+    AutomatedTestConfigUserAuth:
+      anyOf:
+        - $ref: "#/components/schemas/AutomatedTestConfigUserAuthJenkins"
+      discriminator:
+        propertyName: type
+        mapping:
+          jenkins: '#/components/schemas/AutomatedTestConfigUserAuthJenkins'
+
+    TimestampInfo:
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        dateTime:
+          type: string
+          format: date-time
+
+    AutomationRunConfigurationBase:
+      type: object
+      nullable: true
+      properties:
+        type:
+          $ref: '#/components/schemas/AutomatedTestConfigTypes'
+        automatedTestConfig:
+          $ref: '#/components/schemas/AutomatedTestConfigStub'
+
+    JenkinsBuildParameterTypes:
+      description: Jenkins build parameter types
+      type: string
+      enum:
+        - text
+        - password
+        - ignore
+
+    JenkinsBuildParameterBase:
+      description: Common parameters for Jenkins build parameters
+      properties:
+        name:
+          description: Build parameter name in Jenkins
+          type: string
+          example: Force Rebuild
+        type:
+          $ref: '#/components/schemas/JenkinsBuildParameterTypes'
+
+    JenkinsBuildParameterText:
+      allOf:
+        - $ref: '#/components/schemas/JenkinsBuildParameterBase'
+        - description: |
+            Use 'text' type Jenkins parameters for all non-sensitive data. All Jenkins parameters are sent
+            to the Jenkins server as text based on Jenkins API functionality.
+            For boolean parameters, specify 'true' or 'false'. For choice parameters, use the text of the choice value.
+            For a field such as 'User Credentials', specify the 'name' of the credentials.
+          properties:
+            text:
+              description: Text parameter value to send to Jenkins when starting a build
+              type: string
+              example: ReleaseBranch_1.0.0
+            type:
+              example: text
+
+    JenkinsBuildParameterPassword:
+      allOf:
+        - $ref: '#/components/schemas/JenkinsBuildParameterBase'
+        - description: |
+            Use the 'password' type Jenkins parameters for sensitive data. These values are stored encrypted on
+            the Perforce ALM Server and cannot be retrieved via the REST API. On GET, these values are always returned
+            as 'null'.
+          properties:
+            password:
+              description: |
+                Jenkins parameter value to store securely on the Perforce ALM Server. This value will always be 'null'
+                on GET.
+              type: string
+              nullable: true
+              example: Super secret password value
+            type:
+              example: password
+
+    JenkinsBuildParameterIgnore:
+      allOf:
+        - $ref: '#/components/schemas/JenkinsBuildParameterBase'
+        - description: |
+            Use the 'ignore' type when running an automation suite without sending a parameter
+            configured as 'default' on the automation suite run configuration.
+          properties:
+            type:
+              example: ignore
+
+    JenkinsBuildParameter:
+      description: Jenkins build parameters
+      anyOf:
+        - $ref: '#/components/schemas/JenkinsBuildParameterText'
+        - $ref: '#/components/schemas/JenkinsBuildParameterPassword'
+        - $ref: '#/components/schemas/JenkinsBuildParameterIgnore'
+      discriminator:
+        propertyName: type
+        mapping:
+          text: '#/components/schemas/JenkinsBuildParameterText'
+          password: '#/components/schemas/JenkinsBuildParameterPassword'
+          ignore: '#/components/schemas/JenkinsBuildParameterIgnore'
+
+    AutomationRunConfigurationTypeJenkins:
+      description: Jenkins run configuration details
+      properties:
+        projectName:
+          description: Jenkins project name
+          type: string
+          example: REST API Automated Integration Tests
+        remoteAuthenticationToken:
+          description: Jenkins project-specific remote authentication token. On GET, this is always null even if it is set.
+          type: string
+          nullable: true
+          example: ProjectSecurityToken
+        defaultBuildParameters:
+          description: Default build parameters used when starting a new project build in Jenkins
+          type: array
+          items:
+            $ref: '#/components/schemas/JenkinsBuildParameter'
+
+    AutomationRunConfigurationJenkins:
+      allOf:
+        - $ref: '#/components/schemas/AutomationRunConfigurationBase'
+        - properties:
+            jenkins:
+              $ref: '#/components/schemas/AutomationRunConfigurationTypeJenkins'
+
+    AutomationRunConfiguration:
+      anyOf:
+        - $ref: '#/components/schemas/AutomationRunConfigurationJenkins'
+      discriminator:
+        propertyName: type
+        mapping:
+          jenkins: '#/components/schemas/AutomationRunConfigurationJenkins'
+
+    AutomationResultCore:
+      description: Automated test result data
+      properties:
+        name:
+          description: Automated test result name. Required when submitting results.
+          type: string
+          example: testSearchFilesByName_NullContext
+        uniqueName:
+          description: Unique name for the test. Must be unique in the set of results for a build. Required when submitting results.
+          type: string
+          example: com.example.api.APITestSearchOps.testSearchFilesByName_NullContext
+        status:
+          allOf:
+            - $ref: "#/components/schemas/MenuItem"
+            - description: Status for the result. Required when submitting results.
+              example: {
+                "id": 1,
+                "label": "passed"
+              }
+        device:
+          description: Device the test was run on
+          type: string
+        manufacturer:
+          description: Manufacturer of the device the test was run on
+          type: string
+        model:
+          description: Device model the test was run on
+          type: string
+        os:
+          description: Operating system the test was run on
+          type: string
+        osVersion:
+          description: Operating system version the test was run on
+          type: string
+        browser:
+          description: Browser the test was run on
+          type: string
+        browserVersion:
+          description: Browser version the test was run on
+          type: string
+        startDate:
+          description: Date and time the test started
+          type: string
+          format: date-time
+        duration:
+          description: Duration of the test in milliseconds
+          type: number
+          minimum: 0
+          maximum: 4294967295
+          example: 0
+        externalURL:
+          description: External URL related to the test
+          type: string
+        properties:
+          description: Array of name and value pairs to store with the result
+          type: array
+          items:
+            $ref: '#/components/schemas/AutomationBuildProperty'
+
+    AutomationResultCoreArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/AutomationResultCore"
+
+    AutomationResult:
+      allOf:
+        - $ref: "#/components/schemas/AutomationResultCore"
+        - description: Automated test result
+          properties:
+            id:
+              allOf:
+                - $ref: "#/components/schemas/ValidItemID"
+                - description: Automated test result ID
+            self:
+              description: REST API href to the automated test result
+              type: string
+              readOnly: true
+              example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/5/builds/2/results/6
+            testCases:
+              $ref: '#/components/schemas/AutomationTestCaseSetItemResultContainer'
+
+    AutomationResultArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/AutomationResult"
+    AutomationResultContainer:
+      description: Contains information about automated test results
+      properties:
+        resultsData:
+          $ref: '#/components/schemas/AutomationResultArray'
+        self:
+          description: REST API href to the automated test results
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/5/builds/2/results
+
+    AutomationBuildStub:
+      description: Automation build
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/ValidItemID"
+            - description: Automation suite ID
+        number:
+          description: Automation build number
+          type: string
+          example: 167
+        submittedDate:
+          description: Date and time the build had results submitted to the Perforce ALM Server. If no results were
+            submitted for the build, the value is 'null'.
+          type: string
+          format: date-time
+          nullable: true
+        self:
+          description: REST API href to the automation build
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/135/builds/135
+
+    AutomationBuildStubArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/AutomationBuildStub"
+    AutomationBuildStubContainer:
+      description: Contains basic information about automation builds
+      properties:
+        buildsData:
+          $ref: '#/components/schemas/AutomationBuildStubArray'
+
+    TestCaseAutomationResult:
+      allOf:
+        - $ref: "#/components/schemas/AutomationResult"
+        - description: Test case automated test results
+          properties:
+            automationSuite:
+              $ref: "#/components/schemas/AutomationSuiteStub"
+            automationBuild:
+              $ref: "#/components/schemas/AutomationBuildStub"
+
+    TestCaseAutomationResultArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/TestCaseAutomationResult"
+    TestCaseAutomationResultContainer:
+      description: Contains information about automated test results for test cases
+      properties:
+        resultsData:
+          $ref: '#/components/schemas/TestCaseAutomationResultArray'
+        self:
+          description: REST API href to the automated test results
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/testCases/5/automation/results
+
+    AutomationBuildSortColumn:
+      description: Columns that automation builds can be sorted by
+      type: string
+      enum:
+        - branch
+        - number
+        - status
+        - date
+        - description
+        - duration
+        - results_blocked
+        - results_failed
+        - results_passed
+        - results_skipped
+        - results_unknown
+        - results_total
+        - source
+        - start_Date
+        - test_run_sets
+        - users
+        - protected
+
+    AutomationBuildStatus:
+      description: Automation build status
+      type: string
+      enum:
+        - started
+        - building
+        - waitingOnResults
+        - finished
+        - unknown
+
+    AutomationBuildProperty:
+      description: Automation build property
+      properties:
+        name:
+          description: Property name
+          type: string
+        value:
+          description: Property value
+          type: string
+
+    AutomationResultSortColumn:
+      description: Columns that automation builds can be sorted by
+      type: string
+      enum:
+        - build_date
+        - suite_name
+        - status
+
+    AutomatedTestResultSummary:
+      description: Results for automation builds
+      properties:
+        total:
+          description: Total count of results
+          type: number
+          example: 213
+        passed:
+          description: Count of results with a 'Passed' status
+          type: number
+          example: 201
+        failed:
+          description: Count of results with a 'Failed' status
+          type: number
+          example: 9
+        skipped:
+          description: Count of results with a 'Skipped' status
+          type: number
+          example: 3
+        blocked:
+          description: Count of results with a 'Blocked' status
+          type: number
+          example: 1
+        unknown:
+          description: Count of results with an 'Unknown' status
+          type: number
+          example: 0
+
+    AutomationBuildCommon:
+      required:
+        - number
+      properties:
+        number:
+          description: Automation build number
+          type: string
+          example: 167
+        description:
+          description: Automation build description
+          type: string
+        branch:
+          description: Branch associated with the build
+          type: string
+          example: Mainline Branch
+        startDate:
+          description: Date and time that the build started. Provided by the build tool.
+          type: string
+          format: date-time
+        duration:
+          description: Duration of the build in milliseconds
+          type: number
+          minimum: 0
+          maximum: 4294967295
+          example: 533432
+        testRunSet:
+          allOf:
+            - $ref: "#/components/schemas/MenuItem"
+            - description: Test run set associated with the build
+        externalURL:
+          description: Link to the build in the build tool
+          type: string
+          example: https://jenkins.example.com:8080/job/ExampleJob/2
+        properties:
+          description:  List of automation build properties
+          type: array
+          items:
+            $ref: "#/components/schemas/AutomationBuildProperty"
+
+    AutomationBuildSubmitParam:
+      allOf:
+        - $ref: '#/components/schemas/AutomationBuildCommon'
+        - description: Data used to submit new automation builds
+          properties:
+            results:
+              $ref: '#/components/schemas/AutomationResultCoreArray'
+
+    AutomationBuild:
+      allOf:
+        - $ref: '#/components/schemas/AutomationBuildStub'
+        - $ref: '#/components/schemas/AutomationBuildCommon'
+        - properties:
+            status:
+              $ref: '#/components/schemas/AutomationBuildStatus'
+            source:
+              description: How the automation build was submitted to Perforce ALM
+              type: string
+              example: Jenkins Plugin
+            protected:
+              description: Indicates if the build is protected from deletion
+              type: boolean
+            modifiedInfo:
+              allOf:
+                - $ref: '#/components/schemas/TimestampInfo'
+                - description: User who last modified the automation build and when it was modified
+            createdInfo:
+              allOf:
+                - $ref: '#/components/schemas/TimestampInfo'
+                - description: User who created the automation build and when it was created
+            submittedInfo:
+              allOf:
+                - $ref: '#/components/schemas/TimestampInfo'
+                - description: User who submitted the automation build and when they submitted it
+            processingLog:
+              description: Problems that may have occurred while processing the build. For example, the build
+                submitted had a script ID for a test case that was not found.
+              type: string
+            resultsSummary:
+              $ref: "#/components/schemas/AutomatedTestResultSummary"
+            results:
+              $ref: "#/components/schemas/AutomationResultContainer"
+            testCases:
+              $ref: "#/components/schemas/AutomationTestCaseSetContainer"
+
+    AutomationBuildArray:
+      type: array
+      items:
+        $ref: "#/components/schemas/AutomationBuild"
+    AutomationBuildsContainer:
+      description: Contains information about automation builds
+      properties:
+        self:
+          description: REST API href to the automation suites container
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites
+        buildsData:
+          $ref: '#/components/schemas/AutomationBuildArray'
+        paging:
+          $ref: "#/components/schemas/PagingBase"
+
+    AutomationSuiteStub:
+      description: Automation suite
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/ValidItemID"
+            - description: Automation suite ID
+        name:
+          description: Automation suite name
+          type: string
+          example: Example Automation Suite
+        self:
+          description: REST API href to the automated testing configuration container
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/135
+
+    AutomationTestCaseSetItemBase:
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/ValidItemID"
+            - description: Test case ID
+        tag:
+          description: Test case tag
+          type: string
+          example: TC-143
+          readOnly: true
+        number:
+          description: Test case number
+          type: number
+          example: 143
+        isDeleted:
+          description: |
+            Indicates if the referenced test case was deleted from Perforce ALM. For automation suites,
+            this is always false. Automation builds reference the full set of test cases as they existed when
+            the build was submitted to Perforce ALM. If a test case is deleted, the ID is still in the
+            list of test cases associated with the build at the time it occurred.
+          type: boolean
+          readOnly: true
+          example: false
+        link:
+          description: REST API href to a test case
+          type: string
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/testCases/135
+
+    AutomationTestCaseSetItem:
+      allOf:
+        - $ref: "#/components/schemas/AutomationTestCaseSetItemBase"
+        - description: Information about a test case associated with an automation suite or build
+          properties:
+            resultUniqueNames:
+              description: |
+                Results can be associated with test cases in the following ways:
+                1. The result contains a ScriptID tag in the result name or tag list that matches a test case in the
+                automation suite.
+                2. The result's uniqueName matches a uniqueName in the set of test cases in the automation suite.
+                This list of unique names maps to the result's uniqueName that will be associated with the test case.
+              type: array
+              items:
+                type: string
+                example: Mocha Tests;Root Suite.POST ./api/v1/checkConnection;POST ./api/v1/checkConnection;should result in not-OK _HALM1
+
+    AutomationTestCaseSet:
+      description: Set of test cases associated with an automation suite or build
+      type: array
+      items:
+        $ref: '#/components/schemas/AutomationTestCaseSetItem'
+    AutomationTestCaseSetContainer:
+      description: Contains a set of test cases associated with an automation suite or build
+      properties:
+        self:
+          description: REST API href to the container for the set of test cases associated with an automation suite or build
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/5/testCases
+        testCasesData:
+          $ref: '#/components/schemas/AutomationTestCaseSet'
+
+    AutomationTestCaseSetItemResult:
+      allOf:
+        - $ref: "#/components/schemas/AutomationTestCaseSetItemBase"
+        - description: Information about a test case referenced by an automated test result
+          properties:
+            associated:
+              description: |
+                If a result is associated with a test case, it indicates that the test case was part of the automation
+                suite when the build was submitted. This will only be `false` if the result had a script ID that
+                associated it to a test case that was not in the automation Suite when submitted.
+              type: boolean
+              example: true
+    AutomationTestCaseSetItemResultArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/AutomationTestCaseSetItemResult'
+    AutomationTestCaseSetItemResultContainer:
+      description: Contains a set of test cases referenced by an automated test result
+      properties:
+        self:
+          description: REST API href to the container for the set of test cases referenced by an automated test result
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites/5/builds/2/results/6/testCases
+        testCasesData:
+          $ref: '#/components/schemas/AutomationTestCaseSetItemResultArray'
 
 
+    AutomationSuite:
+      allOf:
+        - $ref: '#/components/schemas/AutomationSuiteStub'
+        - properties:
+            name:
+              description: Automation suite name
+              type: string
+              example: AutomationSuite1
+            description:
+              description: Automation suite description
+              type: string
+              example: Automation suite for grouping our automated tests.
+            active:
+              description: Indicates if the automation suite is active
+              type: boolean
+              example: true
+            scriptIDPrefix:
+              description: Prefix for unique test case tags
+              type: string
+              example: TemplateSuite-
+            modifiedInfo:
+              allOf:
+                - $ref: '#/components/schemas/TimestampInfo'
+                - description: User who last modified the automation suite and when they modified it
+            createdInfo:
+              allOf:
+                - $ref: '#/components/schemas/TimestampInfo'
+                - description: User who created the automation suite and when it was created
+            testCases:
+              $ref: '#/components/schemas/AutomationTestCaseSetContainer'
+            owners:
+              description: Automation suite owner list
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+            runConfiguration:
+              $ref: '#/components/schemas/AutomationRunConfiguration'
+
+    AutomationSuiteArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/AutomationSuite'
+    AutomationSuitesContainer:
+      description: Contains information about automation suites
+      properties:
+        self:
+          description: REST API href to the automation suites container
+          type: string
+          readOnly: true
+          example: https://localhost:8443/perforce-alm/api/v0/Traditional_Template/automationSuites
+        automationSuitesData:
+          $ref: '#/components/schemas/AutomationSuiteArray'
+
+    RunAutomationSuiteParamsBase:
+      description: Contains information used to run an automation suite
+      properties:
+        testRunSet:
+          allOf:
+            - $ref: "#/components/schemas/MenuItem"
+            - description: Test run set to add the resulting automation build to
+        type:
+          $ref: '#/components/schemas/AutomatedTestConfigTypes'
+
+    RunAutomationSuiteParamsJenkinsType:
+      description: Jenkins-specific parameters for running an automation suite
+      properties:
+        buildParameters:
+          description: Build parameters used when starting a new project build in Jenkins. These values
+            override the default values specified for the corresponding run configuration on the automation
+            suite. To not send a parameter that has a default value configured, set the 'type' property of the parameter
+            to 'ignore'.
+          type: array
+          items:
+            $ref: '#/components/schemas/JenkinsBuildParameter'
+    RunAutomationSuiteParamsJenkins:
+      allOf:
+        - $ref: '#/components/schemas/RunAutomationSuiteParamsBase'
+        - properties:
+            jenkins:
+              $ref: '#/components/schemas/RunAutomationSuiteParamsJenkinsType'
+
+    RunAutomationSuiteParams:
+      anyOf:
+        - $ref: '#/components/schemas/RunAutomationSuiteParamsJenkins'
+      discriminator:
+        propertyName: type
+        mapping:
+          jenkins: '#/components/schemas/RunAutomationSuiteParamsJenkins'
+
+    AssociateAutomationResults:
+      description: Associates automated test results with test cases
+      properties:
+        resultIDs:
+          description: Automated test result IDs
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidItemID"
+        testCaseIDs:
+          description: Test case IDs
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidItemID"
+        addToSuite:
+          description: Indicates if the automation suite should be updated to associate these results for future builds
+          type: boolean
+          example: false
+
+    OSType:
+      description: Operating system type
+      type: string
+      enum:
+        - unknown
+        - android
+        - ios
