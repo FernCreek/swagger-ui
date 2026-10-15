@@ -13857,10 +13857,8 @@ components:
           type: string
           readOnly: true
           description: REST API href to the nodes list
-        childNodes:
-          type: array
-          items:
-            type: object
+        childNodesData:
+          $ref: "#/components/schemas/NodeArray"
     ItemTypes:
       type: string
       enum:
