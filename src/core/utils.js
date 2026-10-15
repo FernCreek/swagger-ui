@@ -50,7 +50,7 @@ export function arrayify (thing) {
   return normalizeArray(thing)
 }
 
-export function fromJSOrdered(js) {
+export function fromJSOrdered(js, seenObjects = Set()) {
   if (isImmutable(js)) {
     return js // Can't do much here
   }
@@ -60,15 +60,25 @@ export function fromJSOrdered(js) {
   if (!isObject(js)) {
     return js
   }
+  if (seenObjects.has(js)) {
+    // Truly circular object graph (e.g. a self-referencing OpenAPI schema fully
+    // dereferenced by swagger-client) - stop recursing so we don't blow the call
+    // stack. `seenObjects` is an Immutable Set that only ever grows down a given
+    // recursion branch (each call passes its own extended copy to its children,
+    // never mutating the copy its own caller holds), so objects that are merely
+    // shared - but not actually cyclic - between sibling branches are unaffected.
+    return Array.isArray(js) ? Im.List() : Im.OrderedMap()
+  }
+  const nextSeenObjects = seenObjects.add(js)
   if (Array.isArray(js)) {
-    return Im.Seq(js).map(fromJSOrdered).toList()
+    return Im.Seq(js).map((v) => fromJSOrdered(v, nextSeenObjects)).toList()
   }
   if (isFunction(js.entries)) {
     // handle multipart/form-data
     const objWithHashedKeys = createObjWithHashedKeys(js)
-    return Im.OrderedMap(objWithHashedKeys).map(fromJSOrdered)
+    return Im.OrderedMap(objWithHashedKeys).map((v) => fromJSOrdered(v, nextSeenObjects))
   }
-  return Im.OrderedMap(js).map(fromJSOrdered)
+  return Im.OrderedMap(js).map((v) => fromJSOrdered(v, nextSeenObjects))
 }
 
 /**

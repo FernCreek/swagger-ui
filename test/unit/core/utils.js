@@ -1065,6 +1065,27 @@ describe("utils", () => {
       const result = fromJSOrdered(param).toJS()
       expect( result ).toEqual( [1, 1, 2, 3, 5, 8] )
     })
+
+    it("should not blow the stack on a circular object graph", () => {
+      // e.g. a self-referencing OpenAPI schema (Folder -> childFolders -> Folder)
+      // fully dereferenced by swagger-client into a truly circular JS graph.
+      const folder = { name: "root" }
+      folder.childFolders = { childFoldersData: [folder] }
+
+      let result
+      expect(() => { result = fromJSOrdered(folder) }).not.toThrow()
+      expect(result.get("name")).toEqual("root")
+      // The cycle is broken rather than infinitely expanded.
+      expect(result.getIn(["childFolders", "childFoldersData", 0]).size).toEqual(0)
+    })
+
+    it("should still fully convert an object instance shared by non-cyclic sibling branches", () => {
+      const shared = { value: "test" }
+      const param = { a: shared, b: shared }
+
+      const result = fromJSOrdered(param).toJS()
+      expect( result ).toEqual( { a: { value: "test" }, b: { value: "test" } } )
+    })
   })
 
   describe("getAcceptControllingResponse", () => {
