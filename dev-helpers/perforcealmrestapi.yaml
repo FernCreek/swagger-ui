@@ -12135,10 +12135,39 @@ components:
               type: string
               nullable: true
               example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA...
+            defaultAIProviderId:
+              allOf:
+                - $ref: "#/components/schemas/ItemID"
+                - description: ID of the default AI provider used when reviewing requirements of this type. 0 when not set.
+            defaultAIModel:
+              allOf:
+                - $ref: "#/components/schemas/AIModel"
+                - description: >-
+                    Default model used when reviewing requirements of this type. Empty id and name when not set.
+                    Must be empty when defaultAIProviderId is 0.
+            defaultAIReviewPrompt:
+              description: Default markdown prompt used when reviewing requirements of this type with AI.
+              type: string
+              maxLength: 327675
+              example: Check that every requirement states a measurable acceptance criterion.
             self:
               description: REST API href to the requirement type
               readOnly: true
               type: string
+    AIModel:
+      description: An AI model offered by an AI provider
+      type: object
+      properties:
+        id:
+          description: Model ID used when calling the AI provider's API.
+          type: string
+          maxLength: 255
+          example: claude-opus-5-5
+        name:
+          description: Display name of the model. Defaults to id on write when omitted.
+          type: string
+          maxLength: 255
+          example: Claude Opus 5.5
     RequirementTypeArray:
       type: array
       items:
@@ -14119,6 +14148,10 @@ components:
           description: Folder description
           type: string
           maxLength: 255
+        type:
+          allOf:
+            - $ref: "#/components/schemas/FolderTypeStub"
+            - description: Type of the folder. When creating or updating a folder, specify the folder type by id.
         self:
           description: REST API href to a folder
           type: string
@@ -14126,14 +14159,26 @@ components:
           example: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/folders/13
         childFolders:
           $ref: "#/components/schemas/FolderChildrenContainer"
+    FolderTypeStub:
+      description: Basic information about a folder type
+      properties:
+        id:
+          allOf:
+            - $ref: "#/components/schemas/ValidItemID"
+            - description: Folder type record ID
+        name:
+          description: Folder type name
+          type: string
+          example: Tests
     FolderArray:
       type: array
       items:
         $ref: "#/components/schemas/Folder"
       example:
         - name: v7.5 Release
-          path: /Public/Product APS/v7.5 Release
           description: Contains items related to the v7.5 release
+          type:
+            id: 1
     FolderChildrenContainer:
       description: Contains information about folders
       properties:
