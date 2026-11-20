@@ -13869,6 +13869,15 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Node"
+      example:
+        - id: 3
+          outlineNumber: "2.1"
+          tag: FR-2
+          requirementID: 8
+          requirementLink: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/requirements/8
+          self: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/documentTrees/2/nodes/3
+          childNodes:
+            self: https://localhost:8443/perforce-alm/api/v0/Traditional%20Template/documentTrees/2/nodes/3/childNodes
     NodeContainer:
       description: Contains a list of nodes in a requirement document tree
       properties:
